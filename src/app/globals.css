@@ -1,0 +1,249 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+:root {
+  --bg-primary: #000000;
+  --bg-secondary: #050505;
+  --bg-card: #0a0a0a;
+  --bg-elevated: #111111;
+  --accent: #FFFFFF;
+  --accent-hover: #E0E0E0;
+  --accent-glow: rgba(255, 255, 255, 0.15);
+  --accent-muted: #888888;
+  --white: #FFFFFF;
+  --text-primary: #FFFFFF;
+  --text-secondary: #999999;
+  --text-muted: #555555;
+  --border-primary: #1a1a1a;
+  --border-subtle: #111111;
+  --border-hover: #333333;
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-hover: rgba(255, 255, 255, 0.06);
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --error: #EF4444;
+}
+
+body {
+  background-color: #000000;
+  color: #FFFFFF;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@font-face {
+  font-family: 'Gobold';
+  src: url('/fonts/Gobold Regular.otf') format('opentype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Gobold';
+  src: url('/fonts/Gobold Bold.otf') format('opentype');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+.font-gobold {
+  font-family: 'Gobold', var(--font-space-grotesk), sans-serif;
+}
+
+::selection {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #222222;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #444444;
+}
+
+/* Premium gradient text */
+.text-gradient-premium {
+  background: linear-gradient(135deg, #FFFFFF 0%, #888888 50%, #FFFFFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-silver {
+  background: linear-gradient(180deg, #FFFFFF 0%, #666666 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Legacy support */
+.text-gradient-accent {
+  background: linear-gradient(135deg, #FFFFFF 0%, #888888 50%, #FFFFFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glass morphism */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-hover:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Premium card glow */
+.card-glow {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 4px 24px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 0.3s ease;
+}
+
+.card-glow:hover {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 8px 40px rgba(0, 0, 0, 0.8),
+    0 0 60px rgba(255, 255, 255, 0.03);
+}
+
+/* 3D transforms */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Video protection */
+.video-protected {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Animations */
+@keyframes orbital-spin {
+  from { transform: translateZ(0) rotate(0deg); }
+  to { transform: translateZ(0) rotate(360deg); }
+}
+
+@keyframes orbital-counter-spin {
+  from { transform: translateZ(0) rotate(0deg); }
+  to { transform: translateZ(0) rotate(-360deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+.orbital-spin-slow {
+  animation: orbital-spin 34s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+.orbital-counter-spin {
+  animation: orbital-counter-spin 34s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Premium skeleton loading */
+.skeleton {
+  background: linear-gradient(90deg, #111 25%, #1a1a1a 50%, #111 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* Sidebar styles */
+.sidebar-link {
+  @apply flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white/50 transition-all duration-200;
+}
+
+.sidebar-link:hover {
+  @apply bg-white/5 text-white/80;
+}
+
+.sidebar-link.active {
+  @apply text-white;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Admin table styles */
+.admin-table {
+  @apply w-full text-left text-sm;
+}
+
+.admin-table th {
+  @apply border-b border-white/10 px-4 py-3 text-xs font-medium uppercase tracking-wider text-white/40;
+}
+
+.admin-table td {
+  @apply border-b border-white/5 px-4 py-3 text-white/70;
+}
+
+.admin-table tr:hover td {
+  @apply bg-white/[0.02];
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbital-spin-slow,
+  .orbital-counter-spin,
+  .shimmer {
+    animation: none;
+  }
+}
