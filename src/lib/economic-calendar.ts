@@ -207,7 +207,9 @@ const memCache = new Map<string, { data: EconCalEvent[]; expiresAt: number }>();
 
 /* ── Main export ───────────────────────────────────────────────────── */
 export async function getEconomicCalendarEvents(year: number, month: number): Promise<EconCalEvent[]> {
-  const key = `${year}-${month}`;
+  const apiKey = process.env.FINNHUB_API_KEY;
+  // Include source in key so adding/removing the key busts the cache automatically
+  const key = `${year}-${month}-${apiKey ? 'fh' : 'ff'}`;
   const now = Date.now();
 
   // 1. Memory cache
@@ -220,8 +222,6 @@ export async function getEconomicCalendarEvents(year: number, month: number): Pr
     memCache.set(key, file);
     return file.data;
   }
-
-  const apiKey = process.env.FINNHUB_API_KEY;
 
   // 3. Finnhub
   if (apiKey) {
