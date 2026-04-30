@@ -239,7 +239,7 @@ export function Navbar() {
             exit={{ opacity: 0, height: 0 }}
             className="absolute top-full left-0 right-0 overflow-hidden border-y border-white/5 bg-black/95 backdrop-blur-xl lg:hidden"
           >
-            <div className="space-y-1 px-6 py-6">
+            <div className="max-h-[80vh] overflow-y-auto space-y-1 px-6 py-6">
               {pageSectionItems.map((item) => (
                 <Link
                   key={item.label}

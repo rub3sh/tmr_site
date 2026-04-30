@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { getForexFactoryEvents } from '@/lib/forex-factory';
+import { getEconomicCalendarEvents } from '@/lib/economic-calendar';
 
 export async function GET(request: Request) {
   try {
@@ -15,51 +15,45 @@ export async function GET(request: Request) {
     const month = Number(searchParams.get('month'));
     const year = Number(searchParams.get('year'));
 
-    const hasValidMonthFilter = Number.isInteger(month) && month >= 1 && month <= 12
-      && Number.isInteger(year) && year >= 2000 && year <= 2100;
+    const now = new Date();
+    const y = Number.isInteger(year) && year >= 2000 && year <= 2100 ? year : now.getUTCFullYear();
+    const m = Number.isInteger(month) && month >= 1 && month <= 12 ? month : now.getUTCMonth() + 1;
 
-    const monthStart = hasValidMonthFilter
-      ? new Date(Date.UTC(year, month - 1, 1, 0, 0, 0))
-      : null;
-    const nextMonthStart = hasValidMonthFilter
-      ? new Date(Date.UTC(year, month, 1, 0, 0, 0))
-      : null;
+    const monthStart = new Date(Date.UTC(y, m - 1, 1));
+    const nextMonthStart = new Date(Date.UTC(y, m, 1));
 
-    const events = await prisma.calendarEvent.findMany({
-      where: {
-        isPublic: true,
-        ...(hasValidMonthFilter && monthStart && nextMonthStart
-          ? { startTime: { gte: monthStart, lt: nextMonthStart } }
-          : {}),
-      },
-      orderBy: { startTime: 'asc' },
-      select: {
-        id: true, title: true, description: true,
-        eventType: true, startTime: true, endTime: true,
-      },
-    });
+    const [dbEvents, econEvents] = await Promise.all([
+      prisma.calendarEvent.findMany({
+        where: { isPublic: true, startTime: { gte: monthStart, lt: nextMonthStart } },
+        orderBy: { startTime: 'asc' },
+        select: { id: true, title: true, description: true, eventType: true, startTime: true, endTime: true },
+      }),
+      getEconomicCalendarEvents(y, m),
+    ]);
 
-    const forexEvents = (await getForexFactoryEvents())
-      .filter((event) => {
-        if (!hasValidMonthFilter) {
-          return true;
-        }
+    const mappedEcon = econEvents.map((e) => ({
+      id: e.id,
+      title: e.title,
+      shortTitle: e.shortTitle,
+      description: [
+        e.country ? `Country: ${e.country}` : null,
+        e.estimate ? `Forecast: ${e.estimate}` : null,
+        e.previous ? `Previous: ${e.previous}` : null,
+        e.actual ? `Actual: ${e.actual}` : null,
+      ].filter(Boolean).join(' | ') || null,
+      eventType: 'ECONOMIC_NEWS',
+      startTime: e.startTime,
+      endTime: null,
+      impactLevel: e.impact,
+      country: e.country,
+      currency: e.currency,
+    }));
 
-        const date = new Date(event.startTime);
-        return date.getUTCFullYear() === year && date.getUTCMonth() + 1 === month;
-      });
+    const merged = [...dbEvents.map((e) => ({ ...e, startTime: e.startTime.toISOString(), endTime: e.endTime?.toISOString() ?? null })), ...mappedEcon]
+      .sort((a, b) => a.startTime.localeCompare(b.startTime));
 
-    const mergedEvents = [...events, ...forexEvents].sort(
-      (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-    );
-
-    return NextResponse.json({
-      success: true,
-      data: mergedEvents,
-      meta: {
-        forexCoverage: 'TWO_WEEKS',
-      },
-    });
+    const source = process.env.FINNHUB_API_KEY ? 'finnhub' : 'forex_factory';
+    return NextResponse.json({ success: true, data: merged, meta: { source } });
   } catch (error) {
     console.error('Calendar API failed', error);
     return NextResponse.json({ success: false, error: 'Failed to load calendar events' }, { status: 500 });
