@@ -288,21 +288,14 @@ function EconomicCalendar() {
   });
 
   function eventsForDay(day: number) {
-    return filteredEvents.filter((e) => {
-      const d = new Date(e.startTime);
-      return d.getUTCDate() === day
-        && d.getUTCMonth() === currentMonth.getUTCMonth()
-        && d.getUTCFullYear() === currentMonth.getUTCFullYear();
-    });
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const dateStr = `${currentMonth.getUTCFullYear()}-${pad(currentMonth.getUTCMonth() + 1)}-${pad(day)}`;
+    return filteredEvents.filter((e) => e.date === dateStr);
   }
 
+  const selectedDateStr = selectedDate.toISOString().split('T')[0];
   const selectedEvents = filteredEvents
-    .filter((e) => {
-      const d = new Date(e.startTime);
-      return d.getUTCDate() === selectedDate.getUTCDate()
-        && d.getUTCMonth() === selectedDate.getUTCMonth()
-        && d.getUTCFullYear() === selectedDate.getUTCFullYear();
-    })
+    .filter((e) => e.date === selectedDateStr)
     .sort((a, b) => a.startTime.localeCompare(b.startTime));
 
   function toggleCurrency(cur: string) {
