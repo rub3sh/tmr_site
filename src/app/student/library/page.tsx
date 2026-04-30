@@ -96,7 +96,7 @@ export default async function LibraryPage() {
           <Link href={`/student/courses/${inProgressCourse.id}`} className="group flex items-center gap-4">
             <div className="relative flex h-20 w-32 items-center justify-center rounded-xl bg-white/5 overflow-hidden">
               {inProgressCourse.thumbnailUrl ? (
-                <img src={inProgressCourse.thumbnailUrl} alt="" className="h-full w-full object-cover" />
+                <img src={inProgressCourse.thumbnailUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
               ) : (
                 <Play size={24} className="text-white/20" />
               )}
@@ -153,7 +153,7 @@ export default async function LibraryPage() {
               {/* Thumbnail */}
               <div className="relative aspect-video w-full overflow-hidden rounded-t-2xl bg-white/5">
                 {course.thumbnailUrl ? (
-                  <img src={course.thumbnailUrl} alt="" className="h-full w-full object-cover" />
+                  <img src={course.thumbnailUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full items-center justify-center">
                     <BookOpen size={32} className="text-white/10" />

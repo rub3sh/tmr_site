@@ -93,7 +93,7 @@ export default function StudentLeaderboardsPage() {
               {/* User */}
               <div className="flex flex-1 items-center gap-3">
                 {entry.user.image ? (
-                  <img src={entry.user.image} alt="" className="h-10 w-10 rounded-full" />
+                  <img src={entry.user.image} alt="" loading="lazy" className="h-10 w-10 rounded-full" />
                 ) : (
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-sm font-medium text-white/40">
                     {entry.user.name?.[0]?.toUpperCase() ?? 'U'}

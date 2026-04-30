@@ -100,7 +100,7 @@ export default async function AdminStudentsPage() {
                     <td>
                       <div className="flex items-center gap-3">
                         {student.image ? (
-                          <img src={student.image} alt="" className="h-8 w-8 rounded-full" />
+                          <img src={student.image} alt="" loading="lazy" className="h-8 w-8 rounded-full" />
                         ) : (
                           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 text-xs font-medium text-white/50">
                             {student.name?.[0]?.toUpperCase() ?? 'U'}
@@ -142,6 +142,7 @@ export default async function AdminStudentsPage() {
                         studentId={student.id}
                         currentStatus={student.verificationStatus}
                         currentPlanId={activePlan?.id ?? null}
+                        currentPlanName={activePlan?.name ?? null}
                         plans={plans}
                       />
                     </td>
