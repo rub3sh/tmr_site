@@ -49,10 +49,6 @@ export default function StudentCalendarPage() {
   );
 
   useEffect(() => {
-    setSelectedDate(new Date(Date.UTC(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth(), 1)));
-  }, [currentMonth]);
-
-  useEffect(() => {
     const query = new URLSearchParams({
       year: String(currentMonth.getUTCFullYear()),
       month: String(currentMonth.getUTCMonth() + 1),
@@ -85,10 +81,8 @@ export default function StudentCalendarPage() {
   const daysInMonth = monthEnd.getUTCDate();
   const today = new Date();
 
-  const redFolderNews = events.filter((event) => event.eventType === 'ECONOMIC_NEWS' && event.impactLevel === 'HIGH');
-
   function getEventsForDay(day: number): CalEvent[] {
-    return redFolderNews.filter((event) => {
+    return events.filter((event) => {
       const date = new Date(event.startTime);
       return date.getUTCDate() === day
         && date.getUTCMonth() === currentMonth.getUTCMonth()
@@ -96,7 +90,7 @@ export default function StudentCalendarPage() {
     });
   }
 
-  const selectedDateEvents = redFolderNews
+  const selectedDateEvents = events
     .filter((event) => {
       const date = new Date(event.startTime);
       return date.getUTCDate() === selectedDate.getUTCDate()
@@ -162,9 +156,10 @@ export default function StudentCalendarPage() {
                 >
                   <span className={`text-xs ${isSelected || isToday ? 'font-bold text-white' : 'text-white/40'}`}>{day}</span>
                   <div className="mt-0.5 flex gap-0.5">
-                    {dayEvents.slice(0, 3).map((event) => (
-                      <div key={event.id} className="h-1 w-1 rounded-full bg-red-400" />
-                    ))}
+                    {dayEvents.slice(0, 3).map((event) => {
+                      const s = getEventStyle(event);
+                      return <div key={event.id} className={`h-1 w-1 rounded-full ${s.dot}`} />;
+                    })}
                   </div>
                 </button>
               );
@@ -172,10 +167,18 @@ export default function StudentCalendarPage() {
           </div>
 
           {/* Legend */}
-          <div className="mt-4 flex gap-4">
+          <div className="mt-4 flex flex-wrap gap-4">
             <div className="flex items-center gap-1.5">
               <div className="h-2 w-2 rounded-full bg-red-400" />
-              <span className="text-[10px] text-white/25">Red Folder News (High Impact)</span>
+              <span className="text-[10px] text-white/25">High Impact</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-2 w-2 rounded-full bg-yellow-400" />
+              <span className="text-[10px] text-white/25">Medium Impact</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-2 w-2 rounded-full bg-sky-400" />
+              <span className="text-[10px] text-white/25">Low Impact</span>
             </div>
           </div>
         </div>
@@ -185,9 +188,9 @@ export default function StudentCalendarPage() {
           <h3 className="text-sm font-medium text-white/50">
             {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', timeZone: 'UTC' })}
           </h3>
-          {forexCoverage === 'THIS_WEEK_ONLY' && (
+          {forexCoverage === 'TWO_WEEKS' && (
             <p className="text-[11px] text-white/35">
-              Source coverage: Forex Factory public export currently provides this-week feed.
+              Showing this week + next week · Forex Factory
             </p>
           )}
           {selectedDateEvents.map((event) => {
@@ -219,7 +222,7 @@ export default function StudentCalendarPage() {
           {selectedDateEvents.length === 0 && (
             <div className="flex flex-col items-center py-8">
               <CalendarIcon size={32} className="text-white/10" />
-              <p className="mt-2 text-xs text-white/20">No red-folder news for this date</p>
+              <p className="mt-2 text-xs text-white/20">No events for this date</p>
             </div>
           )}
         </div>

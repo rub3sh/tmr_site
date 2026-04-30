@@ -40,7 +40,6 @@ export async function GET(request: Request) {
     });
 
     const forexEvents = (await getForexFactoryEvents())
-      .filter((event) => event.impactLevel === 'HIGH')
       .filter((event) => {
         if (!hasValidMonthFilter) {
           return true;
@@ -58,7 +57,7 @@ export async function GET(request: Request) {
       success: true,
       data: mergedEvents,
       meta: {
-        forexCoverage: 'THIS_WEEK_ONLY',
+        forexCoverage: 'TWO_WEEKS',
       },
     });
   } catch (error) {

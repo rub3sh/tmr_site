@@ -18,11 +18,33 @@ interface CacheState {
   expiresAt: number;
 }
 
-const FEED_URL = 'https://nfs.faireconomy.media/ff_calendar_thisweek.xml';
+const FEED_URLS = [
+  'https://nfs.faireconomy.media/ff_calendar_thisweek.xml',
+  'https://nfs.faireconomy.media/ff_calendar_nextweek.xml',
+];
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const DEFAULT_FEED_TIMEZONE = process.env.FOREX_FACTORY_TIMEZONE || 'America/New_York';
 
 let cache: CacheState | null = null;
+
+async function fetchFeed(url: string): Promise<ForexCalendarEvent[]> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: { Accept: 'application/xml,text/xml;q=0.9,*/*;q=0.8' },
+      cache: 'no-store',
+    });
+    if (!response.ok) return [];
+    const xmlBuffer = await response.arrayBuffer();
+    return parseForexFactoryXml(decodeForexFeed(xmlBuffer));
+  } catch {
+    return [];
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
 
 export async function getForexFactoryEvents(): Promise<ForexCalendarEvent[]> {
   const now = Date.now();
@@ -31,36 +53,21 @@ export async function getForexFactoryEvents(): Promise<ForexCalendarEvent[]> {
   }
 
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
-    const response = await (async () => {
-      try {
-        return await fetch(FEED_URL, {
-          signal: controller.signal,
-          headers: {
-            Accept: 'application/xml,text/xml;q=0.9,*/*;q=0.8',
-          },
-          cache: 'no-store',
-        });
-      } finally {
-        clearTimeout(timeoutId);
+    const results = await Promise.all(FEED_URLS.map(fetchFeed));
+    const seen = new Set<string>();
+    const merged: ForexCalendarEvent[] = [];
+    for (const events of results) {
+      for (const event of events) {
+        if (!seen.has(event.id)) {
+          seen.add(event.id);
+          merged.push(event);
+        }
       }
-    })();
-
-    if (!response.ok) {
-      throw new Error(`Forex Factory feed returned ${response.status}`);
     }
+    merged.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
 
-    const xmlBuffer = await response.arrayBuffer();
-    const xml = decodeForexFeed(xmlBuffer);
-    const parsed = parseForexFactoryXml(xml);
-
-    cache = {
-      data: parsed,
-      expiresAt: now + CACHE_TTL_MS,
-    };
-
-    return parsed;
+    cache = { data: merged, expiresAt: now + CACHE_TTL_MS };
+    return merged;
   } catch {
     return cache?.data ?? [];
   }

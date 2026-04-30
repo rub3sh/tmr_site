@@ -19,6 +19,7 @@ const STUDENT_NAV_ITEMS = [
   { label: 'Library', href: '/student/library' },
   { label: 'Blog', href: '/student/blog' },
   { label: 'Calendar', href: '/student/calendar' },
+  { label: 'The Desk', href: '/student/tools' },
   { label: 'Leaderboards', href: '/student/leaderboards' },
   { label: 'Indicators', href: '/student/indicators' },
   { label: 'Tutor', href: '/student/tutor' },
