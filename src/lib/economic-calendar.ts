@@ -1,10 +1,11 @@
 /**
- * Economic calendar data — Finnhub (full month) with Forex Factory fallback.
- * Set FINNHUB_API_KEY in .env for full monthly coverage.
- * Without the key, falls back to Forex Factory (this week + next week only).
- *
- * Free Finnhub API key: https://finnhub.io/register
+ * Economic calendar — Finnhub primary (full month), Forex Factory fallback.
+ * Add FINNHUB_API_KEY to .env for full monthly data: https://finnhub.io/register
  */
+
+import fs from 'fs';
+import path from 'path';
+import { getForexFactoryEvents } from './forex-factory';
 
 type Impact = 'HIGH' | 'MEDIUM' | 'LOW' | null;
 
@@ -15,7 +16,7 @@ export interface EconCalEvent {
   startTime: string;    // ISO UTC
   date: string;         // YYYY-MM-DD UTC
   time: string | null;  // HH:MM UTC or null
-  country: string;      // 2-letter ISO or currency code
+  country: string;
   currency: string;     // USD, EUR, GBP, …
   impact: Impact;
   actual: string | null;
@@ -24,7 +25,7 @@ export interface EconCalEvent {
   unit: string;
 }
 
-/* ── Country → currency ──────────────────────────────────────────── */
+/* ── Country → currency ────────────────────────────────────────────── */
 const CC: Record<string, string> = {
   US: 'USD', GB: 'GBP', EU: 'EUR', DE: 'EUR', FR: 'EUR', IT: 'EUR',
   ES: 'EUR', NL: 'EUR', PT: 'EUR', AT: 'EUR', BE: 'EUR', FI: 'EUR',
@@ -35,56 +36,28 @@ const CC: Record<string, string> = {
   CZ: 'CZK', TR: 'TRY', RU: 'RUB',
 };
 
-/* ── Event abbreviation map ──────────────────────────────────────── */
+/* ── Abbreviation map ──────────────────────────────────────────────── */
 const ABBR: [string, string][] = [
-  ['nonfarm payrolls', 'NFP'],
-  ['non-farm payrolls', 'NFP'],
-  ['fomc minutes', 'FOMC Min'],
-  ['fomc statement', 'FOMC'],
-  ['fomc', 'FOMC'],
-  ['fed interest rate decision', 'Fed Rate'],
+  ['nonfarm payrolls', 'NFP'], ['non-farm payrolls', 'NFP'],
+  ['fomc minutes', 'FOMC Min'], ['fomc statement', 'FOMC'], ['fomc', 'FOMC'],
+  ['fed interest rate decision', 'Fed Rate'], ['federal funds rate', 'Fed Rate'],
   ['interest rate decision', 'Rate'],
-  ['federal funds rate', 'Fed Rate'],
-  ['consumer price index', 'CPI'],
-  ['cpi m/m', 'CPI'],
-  ['cpi y/y', 'CPI y/y'],
-  ['core cpi', 'Core CPI'],
-  ['core pce', 'Core PCE'],
-  ['pce price index', 'PCE'],
-  ['personal consumption', 'PCE'],
-  ['producer price index', 'PPI'],
-  ['ppi m/m', 'PPI'],
-  ['gross domestic product', 'GDP'],
-  ['gdp growth', 'GDP'],
-  ['gdp q/q', 'GDP'],
-  ['gdp m/m', 'GDP'],
-  ['unemployment rate', 'Unemp.'],
-  ['initial jobless claims', 'Jobless'],
-  ['jobless claims', 'Jobless'],
-  ['retail sales', 'Retail'],
-  ['durable goods', 'Dur. Goods'],
-  ['ism manufacturing', 'ISM Mfg'],
-  ['ism non-manufacturing', 'ISM Svc'],
-  ['ism services', 'ISM Svc'],
-  ['manufacturing pmi', 'Mfg PMI'],
-  ['services pmi', 'Svc PMI'],
-  ['composite pmi', 'PMI'],
-  ['pmi', 'PMI'],
-  ['consumer confidence', 'Con. Conf.'],
-  ['building permits', 'Bld. Perm.'],
-  ['housing starts', 'Housing'],
-  ['trade balance', 'Trade Bal.'],
-  ['current account', 'Curr. Acct'],
-  ['ecb interest rate', 'ECB Rate'],
-  ['boe interest rate', 'BoE Rate'],
-  ['rba interest rate', 'RBA Rate'],
-  ['boc interest rate', 'BoC Rate'],
-  ['rbnz interest rate', 'RBNZ Rate'],
-  ['average hourly earnings', 'AHE'],
-  ['inflation rate', 'CPI'],
-  ['core inflation', 'Core CPI'],
-  ['bank holiday', 'Holiday'],
-  ['flash pmi', 'Flash PMI'],
+  ['consumer price index', 'CPI'], ['cpi m/m', 'CPI'], ['cpi y/y', 'CPI y/y'],
+  ['core cpi', 'Core CPI'], ['core pce', 'Core PCE'],
+  ['pce price index', 'PCE'], ['personal consumption', 'PCE'],
+  ['producer price index', 'PPI'], ['ppi m/m', 'PPI'],
+  ['gross domestic product', 'GDP'], ['gdp growth', 'GDP'], ['gdp q/q', 'GDP'],
+  ['unemployment rate', 'Unemp.'], ['initial jobless claims', 'Jobless'], ['jobless claims', 'Jobless'],
+  ['retail sales', 'Retail'], ['durable goods', 'Dur. Goods'],
+  ['ism manufacturing', 'ISM Mfg'], ['ism non-manufacturing', 'ISM Svc'], ['ism services', 'ISM Svc'],
+  ['manufacturing pmi', 'Mfg PMI'], ['services pmi', 'Svc PMI'], ['composite pmi', 'PMI'],
+  ['flash pmi', 'Flash PMI'], ['pmi', 'PMI'],
+  ['consumer confidence', 'Con. Conf.'], ['building permits', 'Bld. Perm.'], ['housing starts', 'Housing'],
+  ['trade balance', 'Trade Bal.'], ['current account', 'Curr. Acct'],
+  ['ecb interest rate', 'ECB Rate'], ['boe interest rate', 'BoE Rate'],
+  ['rba interest rate', 'RBA Rate'], ['boc interest rate', 'BoC Rate'],
+  ['rbnz interest rate', 'RBNZ Rate'], ['average hourly earnings', 'AHE'],
+  ['inflation rate', 'CPI'], ['core inflation', 'Core CPI'], ['bank holiday', 'Holiday'],
 ];
 
 export function abbreviateEvent(title: string): string {
@@ -96,7 +69,7 @@ export function abbreviateEvent(title: string): string {
   return words.length <= 2 ? title : words.slice(0, 2).join(' ');
 }
 
-/* ── Timezone util (ET → UTC) ────────────────────────────────────── */
+/* ── ET → UTC conversion ───────────────────────────────────────────── */
 function etToUtc(year: number, month: number, day: number, hour: number, minute: number): Date {
   const guess = new Date(Date.UTC(year, month - 1, day, hour, minute));
   try {
@@ -108,23 +81,17 @@ function etToUtc(year: number, month: number, day: number, hour: number, minute:
     const parts = fmt.formatToParts(guess);
     const p = (t: string) => Number(parts.find((x) => x.type === t)?.value ?? '0');
     const asIfUtc = Date.UTC(p('year'), p('month') - 1, p('day'), p('hour'), p('minute'), p('second'));
-    const desired = Date.UTC(year, month - 1, day, hour, minute);
-    return new Date(guess.getTime() - (asIfUtc - desired));
+    return new Date(guess.getTime() - (asIfUtc - Date.UTC(year, month - 1, day, hour, minute)));
   } catch {
     return guess;
   }
 }
 
-/* ── Finnhub mapper ──────────────────────────────────────────────── */
+/* ── Finnhub mapper ────────────────────────────────────────────────── */
 interface FinnhubRow {
-  country: string;
-  event: string;
-  impact: string;
-  actual: number | null;
-  estimate: number | null;
-  prev: number | null;
-  time: string;
-  unit: string;
+  country: string; event: string; impact: string;
+  actual: number | null; estimate: number | null; prev: number | null;
+  time: string; unit: string;
 }
 
 function mapImpact(s: string): Impact {
@@ -135,7 +102,7 @@ function mapImpact(s: string): Impact {
   return null;
 }
 
-function fmt(val: number | null | undefined, unit: string): string | null {
+function fmtVal(val: number | null | undefined, unit: string): string | null {
   if (val == null) return null;
   return unit ? `${val}${unit}` : String(val);
 }
@@ -158,7 +125,9 @@ function mapFinnhubRow(raw: FinnhubRow): EconCalEvent | null {
   }
 
   const isoDate = utcDate.toISOString().split('T')[0];
-  const isoTime = timePart ? `${String(utcDate.getUTCHours()).padStart(2, '0')}:${String(utcDate.getUTCMinutes()).padStart(2, '0')}` : null;
+  const isoTime = timePart
+    ? `${String(utcDate.getUTCHours()).padStart(2, '0')}:${String(utcDate.getUTCMinutes()).padStart(2, '0')}`
+    : null;
   const unit = raw.unit ?? '';
 
   return {
@@ -171,18 +140,17 @@ function mapFinnhubRow(raw: FinnhubRow): EconCalEvent | null {
     country,
     currency,
     impact: mapImpact(raw.impact),
-    actual: fmt(raw.actual, unit),
-    estimate: fmt(raw.estimate, unit),
-    previous: fmt(raw.prev, unit),
+    actual: fmtVal(raw.actual, unit),
+    estimate: fmtVal(raw.estimate, unit),
+    previous: fmtVal(raw.prev, unit),
     unit,
   };
 }
 
-/* ── Forex Factory fallback ──────────────────────────────────────── */
+/* ── Forex Factory fallback ────────────────────────────────────────── */
 async function fromForexFactory(year: number, month: number): Promise<EconCalEvent[]> {
-  const { getForexFactoryEvents } = await import('./forex-factory');
-  const events = await getForexFactoryEvents();
-  return events
+  const ffEvents = await getForexFactoryEvents();
+  return ffEvents
     .filter((e) => {
       const d = new Date(e.startTime);
       return d.getUTCFullYear() === year && d.getUTCMonth() + 1 === month;
@@ -197,7 +165,7 @@ async function fromForexFactory(year: number, month: number): Promise<EconCalEve
         date: iso.split('T')[0],
         time: iso.split('T')[1]?.substring(0, 5) ?? null,
         country: e.country,
-        currency: e.country,
+        currency: e.country, // FF uses currency codes in country field
         impact: e.impactLevel,
         actual: null,
         estimate: null,
@@ -207,18 +175,55 @@ async function fromForexFactory(year: number, month: number): Promise<EconCalEve
     });
 }
 
-/* ── In-memory cache (per month) ─────────────────────────────────── */
-const cache = new Map<string, { data: EconCalEvent[]; expiresAt: number }>();
-const TTL = 5 * 60 * 1000;
+/* ── File-based cache (survives dev hot-reloads) ───────────────────── */
+const CACHE_DIR = '/tmp';
+const CACHE_TTL_FF = 60 * 60 * 1000;    // 60 min — FF updates hourly
+const CACHE_TTL_FH = 10 * 60 * 1000;   // 10 min for Finnhub
 
+function fileCachePath(key: string) {
+  return path.join(CACHE_DIR, `econ-cal-${key.replace(/[^a-z0-9]/gi, '-')}.json`);
+}
+
+function readFileCache(key: string): { data: EconCalEvent[]; expiresAt: number } | null {
+  try {
+    const raw = fs.readFileSync(fileCachePath(key), 'utf-8');
+    const parsed = JSON.parse(raw) as { data: EconCalEvent[]; expiresAt: number };
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeFileCache(key: string, data: EconCalEvent[], expiresAt: number) {
+  try {
+    fs.writeFileSync(fileCachePath(key), JSON.stringify({ data, expiresAt }), 'utf-8');
+  } catch {
+    // non-critical
+  }
+}
+
+/* ── Memory cache (fast path within same process) ──────────────────── */
+const memCache = new Map<string, { data: EconCalEvent[]; expiresAt: number }>();
+
+/* ── Main export ───────────────────────────────────────────────────── */
 export async function getEconomicCalendarEvents(year: number, month: number): Promise<EconCalEvent[]> {
   const key = `${year}-${month}`;
   const now = Date.now();
-  const hit = cache.get(key);
-  if (hit && hit.expiresAt > now) return hit.data;
+
+  // 1. Memory cache
+  const mem = memCache.get(key);
+  if (mem && mem.expiresAt > now) return mem.data;
+
+  // 2. File cache (survives hot-reloads)
+  const file = readFileCache(key);
+  if (file && file.expiresAt > now) {
+    memCache.set(key, file);
+    return file.data;
+  }
 
   const apiKey = process.env.FINNHUB_API_KEY;
 
+  // 3. Finnhub
   if (apiKey) {
     try {
       const pad = (n: number) => String(n).padStart(2, '0');
@@ -235,18 +240,26 @@ export async function getEconomicCalendarEvents(year: number, month: number): Pr
       const events = (json.economicCalendar as FinnhubRow[] ?? [])
         .map(mapFinnhubRow)
         .filter((e): e is EconCalEvent => e !== null)
-        .sort((a: EconCalEvent, b: EconCalEvent) => a.startTime.localeCompare(b.startTime));
+        .sort((a, b) => a.startTime.localeCompare(b.startTime));
 
-      cache.set(key, { data: events, expiresAt: now + TTL });
+      memCache.set(key, { data: events, expiresAt: now + CACHE_TTL_FH });
+      writeFileCache(key, events, now + CACHE_TTL_FH);
       return events;
     } catch {
-      if (hit) return hit.data;
+      // fall through to FF
     }
   }
 
-  // Fallback: Forex Factory (this week + next week)
-  const events = await fromForexFactory(year, month);
-  events.sort((a, b) => a.startTime.localeCompare(b.startTime));
-  cache.set(key, { data: events, expiresAt: now + TTL });
-  return events;
+  // 4. Forex Factory fallback
+  try {
+    const events = await fromForexFactory(year, month);
+    events.sort((a, b) => a.startTime.localeCompare(b.startTime));
+    memCache.set(key, { data: events, expiresAt: now + CACHE_TTL_FF });
+    writeFileCache(key, events, now + CACHE_TTL_FF);
+    return events;
+  } catch {
+    // Return stale file cache data if available, even if expired
+    if (file) return file.data;
+    return [];
+  }
 }
