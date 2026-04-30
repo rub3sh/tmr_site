@@ -48,7 +48,7 @@ fi
 # Only push schema if this is a fresh DB (check if User table exists)
 if ! npx prisma db execute --stdin <<< "SELECT 1 FROM \"User\" LIMIT 1;" >/dev/null 2>&1; then
   echo "Pushing schema..."
-  npx prisma db push --accept-data-loss --skip-generate
+  npx prisma db push --accept-data-loss
   echo "Seeding..."
   npx tsx prisma/seed.ts || true
 fi
