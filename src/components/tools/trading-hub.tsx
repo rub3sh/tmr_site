@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
   Calculator, Calendar, BarChart2, Activity,
   ChevronLeft, ChevronRight, ChevronDown, RefreshCw, Check,
@@ -263,6 +263,7 @@ function EconomicCalendar() {
 
   useEffect(() => {
     setLoading(true);
+    setEvents([]);
     const q = new URLSearchParams({
       year: String(currentMonth.getUTCFullYear()),
       month: String(currentMonth.getUTCMonth() + 1),
@@ -270,9 +271,13 @@ function EconomicCalendar() {
     const ctrl = new AbortController();
     fetch(`/api/public/calendar?${q}`, { signal: ctrl.signal })
       .then((r) => r.json())
-      .then((d) => { if (d.data) { setEvents(d.data); setSource(d.meta?.source ?? ''); } })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .then((d) => {
+        if (d.data) { setEvents(d.data); setSource(d.meta?.source ?? ''); }
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (err?.name !== 'AbortError') setLoading(false);
+      });
     return () => ctrl.abort();
   }, [currentMonth]);
 
@@ -280,23 +285,30 @@ function EconomicCalendar() {
   const daysInMonth = new Date(Date.UTC(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() + 1, 0)).getUTCDate();
   const startDay = monthStart.getUTCDay();
 
-  const filteredEvents = events.filter((e) => {
-    const cur = e.currency?.toUpperCase();
-    const matchCur = currencies.length === 0 || currencies.includes(cur);
-    const matchImp = impactFilter === 'ALL' || e.impact === impactFilter;
-    return matchCur && matchImp;
-  });
+  const filteredEvents = useMemo(() =>
+    events.filter((e) => {
+      const cur = (e.currency ?? '').toUpperCase();
+      const matchCur = currencies.length === 0 || currencies.includes(cur);
+      const matchImp = impactFilter === 'ALL' || e.impact === impactFilter;
+      return matchCur && matchImp;
+    }),
+    [events, currencies, impactFilter]
+  );
 
-  function eventsForDay(day: number) {
+  const selectedDateStr = selectedDate.toISOString().split('T')[0];
+
+  const selectedEvents = useMemo(() =>
+    filteredEvents
+      .filter((e) => e.date === selectedDateStr)
+      .sort((a, b) => a.startTime.localeCompare(b.startTime)),
+    [filteredEvents, selectedDateStr]
+  );
+
+  const eventsForDay = useCallback((day: number) => {
     const pad = (n: number) => String(n).padStart(2, '0');
     const dateStr = `${currentMonth.getUTCFullYear()}-${pad(currentMonth.getUTCMonth() + 1)}-${pad(day)}`;
     return filteredEvents.filter((e) => e.date === dateStr);
-  }
-
-  const selectedDateStr = selectedDate.toISOString().split('T')[0];
-  const selectedEvents = filteredEvents
-    .filter((e) => e.date === selectedDateStr)
-    .sort((a, b) => a.startTime.localeCompare(b.startTime));
+  }, [filteredEvents, currentMonth]);
 
   function toggleCurrency(cur: string) {
     setCurrencies((prev) =>
@@ -431,7 +443,7 @@ function EconomicCalendar() {
         </div>
 
         {/* Events list */}
-        <div className="space-y-2">
+        <div key={`${selectedDateStr}-${currencies.join(',')}-${impactFilter}`} className="space-y-2">
           <p className="text-xs font-medium text-white/40">
             {selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' })}
             <span className="ml-2 text-white/20">({selectedEvents.length})</span>
