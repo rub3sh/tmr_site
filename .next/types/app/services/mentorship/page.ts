@@ -1,4 +1,4 @@
-// File: /home/lucius/mellow's hive/mellows-hive/src/app/services/mentorship/page.tsx
+// File: /home/lucius/mellow's hive/tmr_site/src/app/services/mentorship/page.tsx
 import * as entry from '../../../../../src/app/services/mentorship/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
