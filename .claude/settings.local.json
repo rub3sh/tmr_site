@@ -17,7 +17,9 @@
       "Bash(export PATH=\"$HOME/.cargo/bin:$PATH\")",
       "Bash(cargo test *)",
       "Bash(cargo clippy *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

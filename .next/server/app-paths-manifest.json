@@ -1,19 +1,11 @@
 {
-  "/page": "app/page.js",
-  "/services/mentorship/page": "app/services/mentorship/page.js",
-  "/services/indicators/page": "app/services/indicators/page.js",
-  "/market-education/page": "app/market-education/page.js",
   "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/api/calendar/route": "app/api/calendar/route.js",
-  "/api/leaderboard/route": "app/api/leaderboard/route.js",
-  "/api/indicators/route": "app/api/indicators/route.js",
-  "/api/giveaways/route": "app/api/giveaways/route.js",
-  "/student/blog/page": "app/student/blog/page.js",
-  "/student/library/page": "app/student/library/page.js",
-  "/student/calendar/page": "app/student/calendar/page.js",
-  "/student/tools/page": "app/student/tools/page.js",
-  "/student/leaderboards/page": "app/student/leaderboards/page.js",
-  "/student/indicators/page": "app/student/indicators/page.js",
-  "/student/tutor/page": "app/student/tutor/page.js",
-  "/student/giveaways/page": "app/student/giveaways/page.js"
+  "/page": "app/page.js",
+  "/services/indicators/page": "app/services/indicators/page.js",
+  "/(auth)/login/page": "app/(auth)/login/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/admin/plans/page": "app/admin/plans/page.js",
+  "/admin/students/page": "app/admin/students/page.js",
+  "/admin/settings/page": "app/admin/settings/page.js",
+  "/admin/indicators/page": "app/admin/indicators/page.js"
 }

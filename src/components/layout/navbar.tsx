@@ -102,7 +102,7 @@ export function Navbar() {
     : isIndicatorPage
     ? '/logo/quantum_logo.png'
     : isHomePage
-    ? '/logo/logo.png'
+    ? '/logo/TMR_LOGO.png'
     : '/logo/logo-new-tab.png';
 
   const brandLogoAlt = isMentorshipPage
@@ -117,7 +117,7 @@ export function Navbar() {
   const brandLinkClass = isMentorshipAttached
     ? 'flex items-center gap-2 overflow-hidden'
     : 'flex items-center gap-2';
-  const brandLogoSizeClass = isMentorshipFloating
+  const brandLogoSizeClass = isMentorshipFloating || isHomePage
     ? 'h-36 w-36 md:h-36 md:w-36'
     : isMentorshipAttached
     ? 'h-14 w-14 md:h-16 md:w-16'
@@ -154,7 +154,7 @@ export function Navbar() {
             alt={brandLogoAlt}
             width={64}
             height={64}
-            className={`${brandLogoSizeClass} ${brandLogoScaleClass} shrink-0 object-contain`}
+            className={`${brandLogoSizeClass} ${brandLogoScaleClass} shrink-0 object-contain brightness-110`}
             priority
           />
         </Link>
@@ -170,7 +170,7 @@ export function Navbar() {
                 className={`text-sm font-medium transition-colors duration-200 ${
                   isActive
                     ? 'text-white'
-                    : 'text-white/50 hover:text-white/80'
+                    : 'text-white/70 hover:text-white/90'
                 }`}
               >
                 {item.label}

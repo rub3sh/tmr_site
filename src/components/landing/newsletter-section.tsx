@@ -15,7 +15,7 @@ export function NewsletterSection() {
         className="mx-auto max-w-xl text-center"
       >
         <h2 className="text-2xl font-bold text-white md:text-3xl">
-          Join the InnerEdgeCapital Newsletter
+          Join the TheMarketRevelation Newsletter
         </h2>
         <p className="mt-3 text-sm text-white/40">
           Subscribe to get our latest content by email.

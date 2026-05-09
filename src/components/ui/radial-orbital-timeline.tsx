@@ -33,8 +33,8 @@ function orbitPos(angleDeg: number) {
 
 export default function RadialOrbitalTimeline({
   items,
-  centerLogoSrc = "/logo/logo-new-tab.png",
-  centerLogoAlt = "InnerEdgeCapital",
+  centerLogoSrc = "/logo/tmr_text.png",
+  centerLogoAlt = "The Market Revelation ",
   className,
 }: RadialOrbitalTimelineProps) {
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -114,11 +114,11 @@ export default function RadialOrbitalTimeline({
                   <Link
                     href={item.href}
                     aria-label={accessibleTitle}
-                    className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#131313] shadow-md ring-1 ring-white/[0.06] transition-colors hover:bg-[#1a1a1a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 md:h-[52px] md:w-[52px]"
+                    className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#131313] shadow-md ring-2 ring-white transition-colors hover:bg-[#1a1a1a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 md:h-[52px] md:w-[52px]"
                   >
-                    <Icon className="h-5 w-5 text-white/60" strokeWidth={1.5} />
+                    <Icon className="h-5 w-5 text-white" strokeWidth={1.5} />
                   </Link>
-                  <span className="absolute left-1/2 top-[calc(100%+2px)] -translate-x-1/2 whitespace-pre-line text-center text-[8px] font-semibold uppercase leading-tight tracking-wide text-white/25 sm:text-[9px] md:text-[10px]">
+                  <span className="absolute left-1/2 top-[calc(100%+2px)] -translate-x-1/2 whitespace-pre-line text-center text-[8px] font-semibold uppercase leading-tight tracking-wide text-white sm:text-[9px] md:text-[10px]">
                     {item.title}
                   </span>
                 </div>
@@ -129,10 +129,10 @@ export default function RadialOrbitalTimeline({
       </div>
 
       <div
-        className="absolute z-10 flex items-center justify-center rounded-2xl bg-[#131313] shadow-[0_12px_48px_rgba(0,0,0,0.6)] ring-1 ring-white/[0.06]"
+        className="absolute z-10 flex items-center justify-center rounded-2xl bg-[#131313] shadow-[0_12px_48px_rgba(0,0,0,0.6)] ring-2 ring-white"
         style={{
-          width: "22%",
-          height: "22%",
+          width: "29%",
+          height: "29%",
           left: "50%",
           top: "50%",
           transform: "translate(-50%, -50%)",
@@ -141,9 +141,8 @@ export default function RadialOrbitalTimeline({
         <Image
           src={centerLogoSrc}
           alt={centerLogoAlt}
-          width={64}
-          height={64}
-          className="h-[98%] w-[98%] object-contain"
+          fill
+          className="object-cover scale-150"
           priority
         />
       </div>

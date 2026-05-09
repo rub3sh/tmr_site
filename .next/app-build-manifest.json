@@ -51,55 +51,50 @@
       "static/chunks/main-app.js",
       "static/chunks/app/_not-found/page.js"
     ],
-    "/market-education/page": [
+    "/services/prop-firms/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/market-education/page.js"
+      "static/chunks/app/services/prop-firms/page.js"
     ],
-    "/student/blog/page": [
+    "/(auth)/login/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/student/blog/page.js"
+      "static/chunks/app/(auth)/login/page.js"
     ],
-    "/student/layout": [
+    "/(auth)/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/student/layout.js"
+      "static/chunks/app/(auth)/layout.js"
     ],
-    "/student/library/page": [
+    "/admin/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/student/library/page.js"
+      "static/chunks/app/admin/page.js"
     ],
-    "/student/calendar/page": [
+    "/admin/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/student/calendar/page.js"
+      "static/chunks/app/admin/layout.js"
     ],
-    "/student/tools/page": [
+    "/admin/students/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/student/tools/page.js"
+      "static/chunks/app/admin/students/page.js"
     ],
-    "/student/leaderboards/page": [
+    "/admin/plans/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/student/leaderboards/page.js"
+      "static/chunks/app/admin/plans/page.js"
     ],
-    "/student/indicators/page": [
+    "/admin/settings/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/student/indicators/page.js"
+      "static/chunks/app/admin/settings/page.js"
     ],
-    "/student/tutor/page": [
+    "/admin/indicators/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/student/tutor/page.js"
-    ],
-    "/student/giveaways/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/student/giveaways/page.js"
+      "static/chunks/app/admin/indicators/page.js"
     ]
   }
 }
