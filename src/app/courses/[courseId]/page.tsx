@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: CoursePageProps) {
   const course = await getCourse(params.courseId);
   if (!course) return { title: 'Course Not Found' };
   return {
-    title: `${course.title} — InnerEdgeCapital`,
+    title: `${course.title} — TheMarketRevelation`,
     description: course.shortDesc,
   };
 }

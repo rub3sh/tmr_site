@@ -3,8 +3,9 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
   Calculator, Calendar, BarChart2, Activity,
-  ChevronLeft, ChevronRight, ChevronDown, RefreshCw, Check,
+  ChevronLeft, ChevronRight, ChevronDown, Check,
 } from 'lucide-react';
+import { MarketSentiment } from './market-sentiment';
 
 /* ─── Tabs ─────────────────────────────────────────────────────────────── */
 const TABS = [
@@ -40,31 +41,96 @@ function Select({ value, onChange, options }: {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm text-white transition hover:border-white/15"
+        className="flex w-full items-center justify-between gap-2 rounded-xl border border-white/20 bg-white/[0.04] px-4 py-3 text-left text-sm text-white transition hover:border-white/35 focus:border-white/50 focus:outline-none"
       >
         <span className="flex-1 truncate">{selected?.label ?? value}</span>
-        {selected?.sub && <span className="text-[10px] text-white/25 shrink-0">{selected.sub}</span>}
-        <ChevronDown size={14} className={`shrink-0 text-white/30 transition-transform ${open ? 'rotate-180' : ''}`} />
+        {selected?.sub && <span className="text-[10px] text-white/35 shrink-0">{selected.sub}</span>}
+        <ChevronDown size={14} className={`shrink-0 text-white/40 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
-        <div className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border border-white/10 bg-[#0e0e0e] shadow-2xl">
+        <div className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border border-white/20 bg-[#0e0e0e] shadow-2xl">
           <div className="max-h-56 overflow-y-auto overscroll-contain">
             {options.map((o) => (
               <button
                 key={o.value}
                 type="button"
                 onClick={() => { onChange(o.value); setOpen(false); }}
-                className={`flex w-full items-center justify-between gap-2 px-4 py-2.5 text-left text-sm transition hover:bg-white/[0.04] ${o.value === value ? 'text-white' : 'text-white/50'}`}
+                className={`flex w-full items-center justify-between gap-2 px-4 py-2.5 text-left text-sm transition hover:bg-white/[0.06] ${o.value === value ? 'text-white' : 'text-white/50'}`}
               >
                 <span className="flex-1 truncate">{o.label}</span>
-                {o.sub && <span className="text-[10px] text-white/20">{o.sub}</span>}
-                {o.value === value && <Check size={12} className="shrink-0 text-white/40" />}
+                {o.sub && <span className="text-[10px] text-white/25">{o.sub}</span>}
+                {o.value === value && <Check size={12} className="shrink-0 text-white/60" />}
               </button>
             ))}
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/* ─── Numeric input ─────────────────────────────────────────────────────── */
+// type="number" blocks select() in Chrome; type="text" + inputMode fixes it.
+function NumInput({ value, onChange, step, min, className }: {
+  value: number;
+  onChange: (v: number) => void;
+  step?: number;
+  min?: number;
+  className?: string;
+}) {
+  const [raw, setRaw] = useState(String(value));
+
+  useEffect(() => {
+    setRaw(String(value));
+  }, [value]);
+
+  return (
+    <input
+      type="text"
+      inputMode="decimal"
+      value={raw}
+      onChange={(e) => {
+        setRaw(e.target.value);
+        const n = parseFloat(e.target.value);
+        if (!isNaN(n) && (min === undefined || n >= min)) onChange(n);
+      }}
+      onFocus={(e) => e.target.select()}
+      onBlur={() => {
+        const n = parseFloat(raw);
+        if (isNaN(n)) {
+          setRaw(String(value));
+        } else {
+          setRaw(String(n));
+          onChange(n);
+        }
+      }}
+      className={className}
+    />
+  );
+}
+
+/* ─── Toggle Switch ─────────────────────────────────────────────────────── */
+function ToggleSwitch({ left, right, value, onChange }: {
+  left: string; right: string; value: 'left' | 'right';
+  onChange: (v: 'left' | 'right') => void;
+}) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <span className={`text-xs font-semibold transition ${value === 'left' ? 'text-white' : 'text-white/35'}`}>{left}</span>
+      <button
+        type="button"
+        aria-label="toggle mode"
+        onClick={() => onChange(value === 'left' ? 'right' : 'left')}
+        className={`relative h-6 w-11 rounded-full border transition-all ${
+          value === 'right' ? 'border-white/50 bg-white/25' : 'border-white/25 bg-white/[0.07]'
+        }`}
+      >
+        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all duration-200 ${
+          value === 'right' ? 'left-[22px]' : 'left-0.5'
+        }`} />
+      </button>
+      <span className={`text-xs font-semibold transition ${value === 'right' ? 'text-white' : 'text-white/35'}`}>{right}</span>
     </div>
   );
 }
@@ -98,6 +164,14 @@ const PAIR_PIP: Record<string, number> = {
   'GBP/JPY': 9.5, 'AUD/JPY': 9.5, 'CHF/JPY': 9.5, 'EUR/GBP': 13,
   'EUR/CHF': 10, 'GBP/CHF': 10, 'XAU/USD': 1, 'XAG/USD': 50,
   'BTC/USD': 1, 'ETH/USD': 0.1, Custom: 10,
+};
+
+const PAIR_PIP_SIZE: Record<string, number> = {
+  'EUR/USD': 0.0001, 'GBP/USD': 0.0001, 'AUD/USD': 0.0001, 'NZD/USD': 0.0001,
+  'USD/CAD': 0.0001, 'USD/CHF': 0.0001, 'USD/JPY': 0.01, 'EUR/JPY': 0.01,
+  'GBP/JPY': 0.01, 'AUD/JPY': 0.01, 'CHF/JPY': 0.01, 'EUR/GBP': 0.0001,
+  'EUR/CHF': 0.0001, 'GBP/CHF': 0.0001, 'XAU/USD': 0.01, 'XAG/USD': 0.001,
+  'BTC/USD': 1, 'ETH/USD': 0.01, Custom: 0.0001,
 };
 
 /* ─── Futures data ──────────────────────────────────────────────────────── */
@@ -164,14 +238,41 @@ function ForexCalculator() {
   const [account, setAccount] = useState(10000);
   const [risk, setRisk] = useState(1);
   const [stopPips, setStopPips] = useState(20);
+  const [tpPips, setTpPips] = useState(40);
   const [customPip, setCustomPip] = useState(10);
+  const [mode, setMode] = useState<'left' | 'right'>('left'); // left = Pips, right = Price
+  const [entryPrice, setEntryPrice] = useState(1.1000);
+  const [slPrice, setSlPrice] = useState(1.0980);
 
   const pipVal = pair === 'Custom' ? customPip : (PAIR_PIP[pair] ?? 10);
+  const pipSize = PAIR_PIP_SIZE[pair] ?? 0.0001;
+
+  // In price mode, derive stopPips from entry/sl
+  const derivedStopPips = mode === 'right'
+    ? Math.abs(entryPrice - slPrice) / pipSize
+    : stopPips;
+
+  const isLong = mode === 'right' ? slPrice < entryPrice : true;
+  const tpPriceCalc = mode === 'right'
+    ? isLong
+      ? entryPrice + tpPips * pipSize
+      : entryPrice - tpPips * pipSize
+    : null;
+
+  const activeSL = mode === 'right' ? derivedStopPips : stopPips;
   const riskAmt = account * (risk / 100);
-  const lots = stopPips > 0 && pipVal > 0 ? riskAmt / (stopPips * pipVal) : 0;
+  const lots = activeSL > 0 && pipVal > 0 ? riskAmt / (activeSL * pipVal) : 0;
+  const tpAmt = tpPips > 0 ? lots * tpPips * pipVal : 0;
+  const rr = activeSL > 0 && tpPips > 0 ? tpPips / activeSL : 0;
 
   return (
     <div className="space-y-5">
+      {/* Mode toggle */}
+      <div className="flex items-center justify-between">
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40">Input Mode</p>
+        <ToggleSwitch left="Pips" right="Price" value={mode} onChange={setMode} />
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <label className="label-xs">Instrument</label>
@@ -180,64 +281,102 @@ function ForexCalculator() {
 
         <div>
           <label className="label-xs">Account Balance ($)</label>
-          <input type="number" value={account} onChange={(e) => setAccount(Number(e.target.value))}
-            className="hub-input" min={0} />
+          <NumInput value={account} onChange={setAccount} min={0} className="hub-input" />
         </div>
 
         <div>
           <label className="label-xs">Risk %</label>
-          <input type="number" value={risk} onChange={(e) => setRisk(Number(e.target.value))}
-            step={0.1} className="hub-input" min={0} max={100} />
+          <NumInput value={risk} onChange={setRisk} min={0} className="hub-input" />
           <div className="mt-2 flex gap-1">
             {[0.5, 1, 1.5, 2].map((v) => (
               <button key={v} onClick={() => setRisk(v)}
-                className={`flex-1 rounded-lg py-1.5 text-xs font-medium transition ${risk === v ? 'bg-white text-black' : 'bg-white/5 text-white/35 hover:bg-white/10 hover:text-white/60'}`}>
+                className={`flex-1 rounded-lg py-1.5 text-xs font-medium transition ${risk === v ? 'bg-white text-black' : 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white/70'}`}>
                 {v}%
               </button>
             ))}
           </div>
         </div>
 
-        <div>
-          <label className="label-xs">Stop Loss (pips)</label>
-          <input type="number" value={stopPips} onChange={(e) => setStopPips(Number(e.target.value))}
-            className="hub-input" min={0} />
-        </div>
+        {mode === 'left' ? (
+          <>
+            <div>
+              <label className="label-xs">Stop Loss (pips)</label>
+              <NumInput value={stopPips} onChange={setStopPips} min={0} className="hub-input" />
+            </div>
+            <div>
+              <label className="label-xs">Take Profit (pips)</label>
+              <NumInput value={tpPips} onChange={setTpPips} min={0} className="hub-input" />
+            </div>
+          </>
+        ) : (
+          <>
+            <div>
+              <label className="label-xs">Entry Price</label>
+              <NumInput value={entryPrice} onChange={setEntryPrice} min={0} className="hub-input" />
+            </div>
+            <div>
+              <label className="label-xs">Stop Loss Price</label>
+              <NumInput value={slPrice} onChange={setSlPrice} min={0} className="hub-input" />
+              <p className="mt-1 text-[10px] text-white/40">
+                = {derivedStopPips.toFixed(1)} pips · {isLong ? 'Long' : 'Short'}
+              </p>
+            </div>
+            <div>
+              <label className="label-xs">Take Profit (pips)</label>
+              <NumInput value={tpPips} onChange={setTpPips} min={0} className="hub-input" />
+              {tpPriceCalc !== null && (
+                <p className="mt-1 text-[10px] text-white/40">
+                  TP price ≈ {tpPriceCalc.toFixed(pair.includes('JPY') ? 3 : 5)}
+                </p>
+              )}
+            </div>
+          </>
+        )}
 
         {pair === 'Custom' && (
           <div>
             <label className="label-xs">Pip Value / Lot ($)</label>
-            <input type="number" value={customPip} onChange={(e) => setCustomPip(Number(e.target.value))}
-              step={0.01} className="hub-input" min={0} />
+            <NumInput value={customPip} onChange={setCustomPip} min={0} className="hub-input" />
           </div>
         )}
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-transparent p-5">
-        <p className="mb-4 text-[10px] font-semibold uppercase tracking-widest text-white/25">Position Size</p>
+      {/* Results */}
+      <div className="rounded-2xl border border-white/15 bg-gradient-to-br from-white/[0.05] to-transparent p-5">
+        <p className="mb-4 text-[10px] font-semibold uppercase tracking-widest text-white/35">Position Size</p>
         <div className="grid grid-cols-3 gap-3 text-center">
           {[
             { label: 'Standard Lots', val: lots.toFixed(2), bright: true },
             { label: 'Mini Lots (×10)', val: (lots * 10).toFixed(1), bright: false },
             { label: 'Micro Lots (×100)', val: Math.round(lots * 100), bright: false },
           ].map((r) => (
-            <div key={r.label} className="rounded-xl bg-white/[0.03] py-3 px-2">
-              <p className="text-[9px] text-white/25">{r.label}</p>
-              <p className={`mt-1 font-mono text-xl font-bold ${r.bright ? 'text-white' : 'text-white/50'}`}>{r.val}</p>
+            <div key={r.label} className="rounded-xl border border-white/10 bg-white/[0.04] py-3 px-2">
+              <p className="text-[9px] text-white/35">{r.label}</p>
+              <p className={`mt-1 font-mono text-xl font-bold ${r.bright ? 'text-white' : 'text-white/55'}`}>{r.val}</p>
             </div>
           ))}
         </div>
         <div className="mt-3 grid grid-cols-2 gap-2">
-          <div className="rounded-lg bg-white/[0.02] px-3 py-2.5 flex justify-between items-center">
-            <span className="text-[10px] text-white/30">Risk Amount</span>
+          <div className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2.5 flex justify-between items-center">
+            <span className="text-[10px] text-white/40">Risk Amount</span>
             <span className="font-mono text-sm font-bold text-white">${riskAmt.toFixed(2)}</span>
           </div>
-          <div className="rounded-lg bg-white/[0.02] px-3 py-2.5 flex justify-between items-center">
-            <span className="text-[10px] text-white/30">Pip Value / Lot</span>
-            <span className="font-mono text-sm font-bold text-white/60">${pipVal.toFixed(2)}</span>
+          <div className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2.5 flex justify-between items-center">
+            <span className="text-[10px] text-white/40">Pip Value / Lot</span>
+            <span className="font-mono text-sm font-bold text-white/65">${pipVal.toFixed(2)}</span>
+          </div>
+          <div className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2.5 flex justify-between items-center">
+            <span className="text-[10px] text-white/40">TP Profit</span>
+            <span className="font-mono text-sm font-bold text-green-400">${tpAmt.toFixed(2)}</span>
+          </div>
+          <div className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2.5 flex justify-between items-center">
+            <span className="text-[10px] text-white/40">R : R Ratio</span>
+            <span className={`font-mono text-sm font-bold ${rr >= 2 ? 'text-green-400' : rr >= 1 ? 'text-yellow-400' : 'text-red-400/80'}`}>
+              1 : {rr.toFixed(2)}
+            </span>
           </div>
         </div>
-        <p className="mt-3 text-center text-[9px] text-white/20">
+        <p className="mt-3 text-center text-[9px] text-white/25">
           Pip values are approximate for standard USD accounts.
         </p>
       </div>
@@ -318,9 +457,7 @@ function EconomicCalendar() {
 
   return (
     <div className="space-y-4">
-      {/* Filters */}
       <div className="flex flex-wrap gap-3">
-        {/* Currency chips */}
         <div className="flex flex-wrap gap-1.5">
           {CURRENCIES.map((cur) => (
             <button
@@ -328,17 +465,15 @@ function EconomicCalendar() {
               onClick={() => toggleCurrency(cur)}
               className={`rounded-full px-3 py-1 text-xs font-mono font-semibold transition ${
                 currencies.includes(cur)
-                  ? 'bg-white/10 text-white ring-1 ring-white/20'
-                  : 'text-white/25 hover:text-white/50 hover:bg-white/5'
+                  ? 'bg-white/15 text-white ring-1 ring-white/35'
+                  : 'text-white/35 hover:text-white/60 hover:bg-white/5'
               }`}
             >
               {cur}
             </button>
           ))}
         </div>
-        {/* Divider */}
         <div className="h-6 w-px bg-white/10 self-center hidden sm:block" />
-        {/* Impact chips */}
         <div className="flex gap-1.5">
           {(['ALL', 'HIGH', 'MEDIUM', 'LOW'] as const).map((f) => (
             <button
@@ -350,7 +485,7 @@ function EconomicCalendar() {
                     : f === 'MEDIUM' ? 'bg-yellow-500/20 text-yellow-400 ring-1 ring-yellow-500/30'
                     : f === 'LOW' ? 'bg-sky-500/20 text-sky-400 ring-1 ring-sky-500/30'
                     : 'bg-white/10 text-white'
-                  : 'text-white/25 hover:text-white/50 hover:bg-white/5'
+                  : 'text-white/30 hover:text-white/55 hover:bg-white/5'
               }`}
             >
               {f === 'ALL' ? 'All' : IMPACT_STYLE[f].label}
@@ -359,37 +494,36 @@ function EconomicCalendar() {
         </div>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[1fr_280px]">
-        {/* Mini calendar */}
-        <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <span className="text-sm font-semibold text-white">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 sm:p-6">
+          <div className="mb-5 flex items-center justify-between">
+            <span className="font-heading text-xl font-bold text-white sm:text-2xl">
               {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' })}
             </span>
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-1">
               <button onClick={() => setCurrentMonth(new Date(Date.UTC(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() - 1, 1)))}
-                className="rounded-lg p-1.5 text-white/30 hover:bg-white/5 hover:text-white/60">
-                <ChevronLeft size={13} />
+                className="rounded-lg p-2 text-white/40 hover:bg-white/5 hover:text-white/80">
+                <ChevronLeft size={18} />
               </button>
               <button onClick={() => { setCurrentMonth(new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1))); setSelectedDate(todayUtc); }}
-                className="rounded-lg px-2 py-1 text-[10px] text-white/30 hover:bg-white/5 hover:text-white/60">
+                className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white/50 hover:bg-white/5 hover:text-white/85">
                 Today
               </button>
               <button onClick={() => setCurrentMonth(new Date(Date.UTC(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() + 1, 1)))}
-                className="rounded-lg p-1.5 text-white/30 hover:bg-white/5 hover:text-white/60">
-                <ChevronRight size={13} />
+                className="rounded-lg p-2 text-white/40 hover:bg-white/5 hover:text-white/80">
+                <ChevronRight size={18} />
               </button>
             </div>
           </div>
 
-          <div className="mb-1 grid grid-cols-7">
-            {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
-              <div key={i} className="py-1.5 text-center text-[9px] font-medium text-white/20">{d}</div>
+          <div className="mb-2 grid grid-cols-7 border-b border-white/5 pb-2">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d, i) => (
+              <div key={i} className="text-center text-[11px] font-semibold uppercase tracking-wider text-white/40">{d}</div>
             ))}
           </div>
 
-          <div className="grid grid-cols-7 gap-0.5">
-            {Array.from({ length: startDay }).map((_, i) => <div key={`e${i}`} className="aspect-square" />)}
+          <div className="grid grid-cols-7 gap-1.5">
+            {Array.from({ length: startDay }).map((_, i) => <div key={`e${i}`} className="min-h-[80px]" />)}
             {Array.from({ length: daysInMonth }).map((_, i) => {
               const day = i + 1;
               const dayUtc = new Date(Date.UTC(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth(), day));
@@ -404,31 +538,42 @@ function EconomicCalendar() {
                 <button
                   key={day}
                   onClick={() => setSelectedDate(dayUtc)}
-                  className={`min-h-[36px] rounded-lg px-0.5 py-1 text-center transition ${
-                    isSelected ? 'bg-white/10 ring-1 ring-white/20'
-                    : isToday ? 'bg-white/5 ring-1 ring-white/10'
-                    : 'hover:bg-white/[0.03]'
+                  className={`flex min-h-[80px] flex-col items-stretch rounded-xl border px-2 py-2 text-left transition sm:min-h-[96px] ${
+                    isSelected ? 'border-white/30 bg-white/[0.10]'
+                    : isToday ? 'border-white/20 bg-white/[0.05]'
+                    : 'border-white/[0.06] hover:border-white/15 hover:bg-white/[0.04]'
                   }`}
                 >
-                  <span className={`block text-[11px] leading-none ${isSelected || isToday ? 'font-bold text-white' : 'text-white/40'}`}>
+                  <span className={`text-sm leading-none ${isSelected || isToday ? 'font-bold text-white' : 'font-semibold text-white/55'}`}>
                     {day}
                   </span>
                   {dayEvts.length > 0 && (
-                    <div className="mt-0.5 flex flex-col items-center gap-px">
+                    <div className="mt-2 flex flex-1 flex-col gap-1 overflow-hidden">
                       {singleEvt ? (
-                        <>
-                          <div className={`h-1 w-1 rounded-full ${hasHigh ? 'bg-red-400' : hasMed ? 'bg-yellow-400' : 'bg-sky-400'}`} />
-                          <span className={`text-[7px] font-bold leading-none truncate max-w-[28px] ${hasHigh ? 'text-red-400/70' : hasMed ? 'text-yellow-400/70' : 'text-sky-400/70'}`}>
-                            {singleEvt.shortTitle?.substring(0, 5)}
-                          </span>
-                        </>
-                      ) : (
-                        <div className="flex gap-px justify-center">
-                          {dayEvts.slice(0, 3).map((e, ii) => (
-                            <div key={ii} className={`h-1 w-1 rounded-full ${e.impact === 'HIGH' ? 'bg-red-400' : e.impact === 'MEDIUM' ? 'bg-yellow-400' : 'bg-sky-400'}`} />
-                          ))}
-                          {dayEvts.length > 3 && <span className="text-[7px] text-white/20 ml-px">+{dayEvts.length - 3}</span>}
+                        <div className={`flex items-center gap-1.5 truncate rounded-md px-1.5 py-1 text-[10px] font-medium ${
+                          hasHigh ? 'bg-red-500/15 text-red-300'
+                          : hasMed ? 'bg-yellow-500/15 text-yellow-300'
+                          : 'bg-sky-500/15 text-sky-300'
+                        }`}>
+                          <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${hasHigh ? 'bg-red-400' : hasMed ? 'bg-yellow-400' : 'bg-sky-400'}`} />
+                          <span className="truncate">{singleEvt.shortTitle?.substring(0, 12)}</span>
                         </div>
+                      ) : (
+                        <>
+                          {dayEvts.slice(0, 2).map((e, ii) => (
+                            <div key={ii} className={`flex items-center gap-1.5 truncate rounded-md px-1.5 py-0.5 text-[9px] font-medium ${
+                              e.impact === 'HIGH' ? 'bg-red-500/15 text-red-300'
+                              : e.impact === 'MEDIUM' ? 'bg-yellow-500/15 text-yellow-300'
+                              : 'bg-sky-500/15 text-sky-300'
+                            }`}>
+                              <span className={`h-1 w-1 shrink-0 rounded-full ${e.impact === 'HIGH' ? 'bg-red-400' : e.impact === 'MEDIUM' ? 'bg-yellow-400' : 'bg-sky-400'}`} />
+                              <span className="truncate">{e.shortTitle?.substring(0, 10) || e.currency}</span>
+                            </div>
+                          ))}
+                          {dayEvts.length > 2 && (
+                            <span className="text-[9px] font-semibold text-white/45">+{dayEvts.length - 2} more</span>
+                          )}
+                        </>
                       )}
                     </div>
                   )}
@@ -437,16 +582,15 @@ function EconomicCalendar() {
             })}
           </div>
 
-          <p className="mt-2 text-[9px] text-white/20">
+          <p className="mt-4 text-[10px] text-white/30">
             {source === 'finnhub' ? 'Full month · Finnhub' : 'This week + next · Forex Factory'} · All times UTC
           </p>
         </div>
 
-        {/* Events list */}
         <div key={`${selectedDateStr}-${currencies.join(',')}-${impactFilter}`} className="space-y-2">
-          <p className="text-xs font-medium text-white/40">
+          <p className="text-xs font-medium text-white/50">
             {selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' })}
-            <span className="ml-2 text-white/20">({selectedEvents.length})</span>
+            <span className="ml-2 text-white/25">({selectedEvents.length})</span>
           </p>
           {loading ? (
             <div className="space-y-2">
@@ -454,31 +598,31 @@ function EconomicCalendar() {
             </div>
           ) : selectedEvents.length === 0 ? (
             <div className="flex flex-col items-center py-10">
-              <Calendar size={24} className="text-white/10" />
-              <p className="mt-2 text-xs text-white/20">No events</p>
+              <Calendar size={24} className="text-white/15" />
+              <p className="mt-2 text-xs text-white/25">No events</p>
             </div>
           ) : (
             selectedEvents.map((e) => {
               const imp = e.impact ? IMPACT_STYLE[e.impact] : null;
               return (
-                <div key={e.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
+                <div key={e.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
                   <div className="flex items-start gap-2">
                     {imp && <div className={`mt-1 h-1.5 w-1.5 rounded-full flex-shrink-0 ${imp.dot}`} />}
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-white/80 leading-tight">{e.shortTitle}</p>
-                      <p className="text-[10px] text-white/35 truncate">{e.title}</p>
+                      <p className="text-xs font-semibold text-white/90 leading-tight">{e.shortTitle}</p>
+                      <p className="text-[10px] text-white/40 truncate">{e.title}</p>
                     </div>
-                    <span className="font-mono text-[10px] font-bold text-white/40 shrink-0">{e.currency}</span>
+                    <span className="font-mono text-[10px] font-bold text-white/50 shrink-0">{e.currency}</span>
                   </div>
                   <div className="mt-2 flex items-center justify-between">
-                    <span className="text-[10px] text-white/25">
+                    <span className="text-[10px] text-white/30">
                       {e.time ? `${e.time} UTC` : 'All day'}
                     </span>
                     {(e.actual || e.estimate || e.previous) && (
                       <div className="flex gap-2 text-[9px]">
                         {e.actual && <span className="text-green-400">A: {e.actual}</span>}
-                        {e.estimate && <span className="text-white/30">F: {e.estimate}</span>}
-                        {e.previous && <span className="text-white/20">P: {e.previous}</span>}
+                        {e.estimate && <span className="text-white/35">F: {e.estimate}</span>}
+                        {e.previous && <span className="text-white/25">P: {e.previous}</span>}
                       </div>
                     )}
                   </div>
@@ -500,21 +644,46 @@ function FuturesScale() {
   const [account, setAccount] = useState(25000);
   const [dollarRisk, setDollarRisk] = useState(500);
   const [stopTicks, setStopTicks] = useState(8);
+  const [tpTicks, setTpTicks] = useState(16);
+  const [mode, setMode] = useState<'left' | 'right'>('left'); // left = Ticks, right = Price
+  const [entryPrice, setEntryPrice] = useState(5000);
+  const [slPrice, setSlPrice] = useState(4998);
 
   const contract = CONTRACTS.find((c) => c.symbol === symbol) ?? CONTRACTS[0];
   const riskPct = account > 0 ? (dollarRisk / account) * 100 : 0;
-  const contracts = stopTicks > 0 && contract.tickVal > 0
-    ? Math.floor(dollarRisk / (stopTicks * contract.tickVal))
+
+  const derivedStopTicks = mode === 'right'
+    ? Math.round(Math.abs(entryPrice - slPrice) / contract.tick)
+    : stopTicks;
+
+  const isLong = mode === 'right' ? slPrice < entryPrice : true;
+  const tpPriceCalc = mode === 'right'
+    ? isLong
+      ? entryPrice + tpTicks * contract.tick
+      : entryPrice - tpTicks * contract.tick
+    : null;
+
+  const activeSL = mode === 'right' ? derivedStopTicks : stopTicks;
+  const contracts = activeSL > 0 && contract.tickVal > 0
+    ? Math.floor(dollarRisk / (activeSL * contract.tickVal))
     : 0;
-  const actualRisk = contracts * stopTicks * contract.tickVal;
+  const actualRisk = contracts * activeSL * contract.tickVal;
+  const tpAmt = contracts * tpTicks * contract.tickVal;
+  const rr = activeSL > 0 && tpTicks > 0 ? tpTicks / activeSL : 0;
 
   return (
     <div className="space-y-5">
+      {/* Mode toggle */}
+      <div className="flex items-center justify-between">
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40">Input Mode</p>
+        <ToggleSwitch left="Ticks" right="Price" value={mode} onChange={setMode} />
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <label className="label-xs">Contract</label>
           <Select value={symbol} onChange={setSymbol} options={CONTRACT_OPTIONS} />
-          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-white/30">
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-white/40">
             <span>Tick size: {contract.tick}</span>
             <span>Tick value: ${contract.tickVal}</span>
             <span>Exchange: {contract.exchange}</span>
@@ -523,56 +692,95 @@ function FuturesScale() {
 
         <div>
           <label className="label-xs">Account Size ($)</label>
-          <input type="number" value={account} onChange={(e) => setAccount(Number(e.target.value))}
-            className="hub-input" min={0} />
+          <NumInput value={account} onChange={setAccount} min={0} className="hub-input" />
         </div>
 
         <div>
           <label className="label-xs">Dollar Risk ($)</label>
-          <input type="number" value={dollarRisk} onChange={(e) => setDollarRisk(Number(e.target.value))}
-            className="hub-input" min={0} />
-          <p className="mt-1 text-[10px] text-white/25">{riskPct.toFixed(2)}% of account</p>
+          <NumInput value={dollarRisk} onChange={setDollarRisk} min={0} className="hub-input" />
+          <p className="mt-1 text-[10px] text-white/40">{riskPct.toFixed(2)}% of account</p>
         </div>
 
-        <div>
-          <label className="label-xs">Stop Loss (ticks)</label>
-          <input type="number" value={stopTicks} onChange={(e) => setStopTicks(Number(e.target.value))}
-            className="hub-input" min={1} />
-          <p className="mt-1 text-[10px] text-white/25">{(stopTicks * contract.tick).toFixed(4)} points</p>
-        </div>
+        {mode === 'left' ? (
+          <>
+            <div>
+              <label className="label-xs">Stop Loss (ticks)</label>
+              <NumInput value={stopTicks} onChange={setStopTicks} min={1} className="hub-input" />
+              <p className="mt-1 text-[10px] text-white/40">{(stopTicks * contract.tick).toFixed(4)} points</p>
+            </div>
+            <div>
+              <label className="label-xs">Take Profit (ticks)</label>
+              <NumInput value={tpTicks} onChange={setTpTicks} min={0} className="hub-input" />
+              <p className="mt-1 text-[10px] text-white/40">{(tpTicks * contract.tick).toFixed(4)} points</p>
+            </div>
+          </>
+        ) : (
+          <>
+            <div>
+              <label className="label-xs">Entry Price</label>
+              <NumInput value={entryPrice} onChange={setEntryPrice} min={0} className="hub-input" />
+            </div>
+            <div>
+              <label className="label-xs">Stop Loss Price</label>
+              <NumInput value={slPrice} onChange={setSlPrice} min={0} className="hub-input" />
+              <p className="mt-1 text-[10px] text-white/40">
+                = {derivedStopTicks} ticks · {isLong ? 'Long' : 'Short'}
+              </p>
+            </div>
+            <div>
+              <label className="label-xs">Take Profit (ticks)</label>
+              <NumInput value={tpTicks} onChange={setTpTicks} min={0} className="hub-input" />
+              {tpPriceCalc !== null && (
+                <p className="mt-1 text-[10px] text-white/40">
+                  TP price ≈ {tpPriceCalc.toFixed(2)}
+                </p>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Result */}
-      <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-transparent p-5">
-        <p className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-white/25">Position Size</p>
+      <div className="rounded-2xl border border-white/15 bg-gradient-to-br from-white/[0.05] to-transparent p-5">
+        <p className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-white/35">Position Size</p>
         <p className="text-center font-mono text-6xl font-black text-white">{contracts}</p>
-        <p className="mt-1 text-center text-sm text-white/40">contract{contracts !== 1 ? 's' : ''}</p>
+        <p className="mt-1 text-center text-sm text-white/50">contract{contracts !== 1 ? 's' : ''}</p>
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <div className="rounded-xl bg-white/[0.03] px-3 py-2.5">
-            <p className="text-[9px] text-white/25">Actual Risk</p>
+          <div className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5">
+            <p className="text-[9px] text-white/35">Actual Risk</p>
             <p className="font-mono text-sm font-bold text-white">${actualRisk.toFixed(0)}</p>
           </div>
-          <div className="rounded-xl bg-white/[0.03] px-3 py-2.5">
-            <p className="text-[9px] text-white/25">{stopTicks} ticks × ${contract.tickVal}</p>
-            <p className="font-mono text-sm font-bold text-white/60">${(stopTicks * contract.tickVal).toFixed(2)}/contract</p>
+          <div className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5">
+            <p className="text-[9px] text-white/35">{activeSL} ticks × ${contract.tickVal}</p>
+            <p className="font-mono text-sm font-bold text-white/65">${(activeSL * contract.tickVal).toFixed(2)}/contract</p>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5">
+            <p className="text-[9px] text-white/35">TP Profit</p>
+            <p className="font-mono text-sm font-bold text-green-400">${tpAmt.toFixed(0)}</p>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5">
+            <p className="text-[9px] text-white/35">R : R Ratio</p>
+            <p className={`font-mono text-sm font-bold ${rr >= 2 ? 'text-green-400' : rr >= 1 ? 'text-yellow-400' : 'text-red-400/80'}`}>
+              1 : {rr.toFixed(2)}
+            </p>
           </div>
         </div>
-        {contracts === 0 && stopTicks > 0 && (
+        {contracts === 0 && activeSL > 0 && (
           <p className="mt-3 text-center text-xs text-red-400/60">Dollar risk too small for 1 contract at this stop</p>
         )}
       </div>
 
       {/* Quick reference */}
-      <div className="overflow-hidden rounded-xl border border-white/5">
-        <div className="border-b border-white/5 px-4 py-2.5">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-white/25">Quick Reference — click to select</p>
+      <div className="overflow-hidden rounded-xl border border-white/10">
+        <div className="border-b border-white/10 px-4 py-2.5">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-white/35">Quick Reference — click to select</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-white/[0.04]">
+              <tr className="border-b border-white/[0.06]">
                 {['Symbol', 'Name', 'Tick', 'Tick $', 'Exch.'].map((h) => (
-                  <th key={h} className="px-3 py-2 text-left text-[10px] font-medium text-white/20">{h}</th>
+                  <th key={h} className="px-3 py-2 text-left text-[10px] font-medium text-white/30">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -581,13 +789,13 @@ function FuturesScale() {
                 <tr
                   key={c.symbol}
                   onClick={() => setSymbol(c.symbol)}
-                  className={`cursor-pointer border-b border-white/[0.03] transition hover:bg-white/[0.03] ${symbol === c.symbol ? 'bg-white/[0.05]' : ''}`}
+                  className={`cursor-pointer border-b border-white/[0.04] transition hover:bg-white/[0.04] ${symbol === c.symbol ? 'bg-white/[0.07]' : ''}`}
                 >
-                  <td className="px-3 py-2 font-mono font-bold text-white/80">{c.symbol}</td>
-                  <td className="px-3 py-2 text-white/40 max-w-[140px] truncate">{c.name}</td>
-                  <td className="px-3 py-2 text-white/30">{c.tick}</td>
-                  <td className="px-3 py-2 text-white/40">${c.tickVal}</td>
-                  <td className="px-3 py-2 text-white/20">{c.exchange}</td>
+                  <td className="px-3 py-2 font-mono font-bold text-white">{c.symbol}</td>
+                  <td className="px-3 py-2 text-white/50 max-w-[140px] truncate">{c.name}</td>
+                  <td className="px-3 py-2 text-white/40">{c.tick}</td>
+                  <td className="px-3 py-2 text-white/50">${c.tickVal}</td>
+                  <td className="px-3 py-2 text-white/30">{c.exchange}</td>
                 </tr>
               ))}
             </tbody>
@@ -598,175 +806,6 @@ function FuturesScale() {
   );
 }
 
-/* ══════════════════════════════════════════════════════════════════════════
-   MARKET SENTIMENT
-══════════════════════════════════════════════════════════════════════════ */
-const ASSETS = ['Crypto', 'Stocks', 'Forex', 'Gold'] as const;
-type Asset = (typeof ASSETS)[number];
-
-interface FngData { value: string; value_classification: string; timestamp: string }
-
-function SentimentGauge({ score }: { score: number }) {
-  const pct = Math.max(0, Math.min(100, score));
-  const color = pct >= 75 ? '#4ade80' : pct >= 55 ? '#34d399' : pct >= 45 ? '#facc15' : pct >= 25 ? '#fb923c' : '#f87171';
-  return (
-    <div className="relative h-3 w-full overflow-hidden rounded-full bg-white/10">
-      <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, background: color }} />
-    </div>
-  );
-}
-
-function CryptoSentiment() {
-  const [fng, setFng] = useState<FngData | null>(null);
-  const [history, setHistory] = useState<FngData[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const load = useCallback(() => {
-    setLoading(true);
-    fetch('https://api.alternative.me/fng/?limit=7')
-      .then((r) => r.json())
-      .then((d) => { if (d.data?.length) { setFng(d.data[0]); setHistory(d.data); } })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
-  const score = fng ? Number(fng.value) : 0;
-  const getColor = (s: number) => s >= 75 ? 'text-green-400' : s >= 55 ? 'text-emerald-400' : s >= 45 ? 'text-yellow-400' : s >= 25 ? 'text-orange-400' : 'text-red-400';
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-xs font-semibold text-white/40">Crypto Fear &amp; Greed</p>
-          <p className="text-[10px] text-white/20">Source: alternative.me</p>
-        </div>
-        <button onClick={load} className="rounded-lg p-2 text-white/20 hover:bg-white/5 hover:text-white/50 transition">
-          <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
-        </button>
-      </div>
-
-      {loading ? (
-        <div className="h-24 animate-pulse rounded-xl bg-white/5" />
-      ) : fng ? (
-        <>
-          <div className="flex items-end gap-4">
-            <p className={`font-mono text-6xl font-black ${getColor(score)}`}>{fng.value}</p>
-            <div className="pb-1">
-              <p className={`text-xl font-bold ${getColor(score)}`}>{fng.value_classification}</p>
-              <p className="text-[10px] text-white/25">
-                {new Date(Number(fng.timestamp) * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-              </p>
-            </div>
-          </div>
-          <SentimentGauge score={score} />
-          <div className="flex justify-between text-[9px] text-white/20">
-            <span>Extreme Fear (0)</span>
-            <span>Neutral (50)</span>
-            <span>Extreme Greed (100)</span>
-          </div>
-
-          {/* 7-day history */}
-          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-            <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-white/25">7-Day History</p>
-            <div className="space-y-1.5">
-              {history.slice(0, 7).map((h, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <span className="w-16 text-[10px] text-white/25">
-                    {i === 0 ? 'Today' : new Date(Number(h.timestamp) * 1000).toLocaleDateString('en-US', { weekday: 'short' })}
-                  </span>
-                  <div className="flex-1">
-                    <SentimentGauge score={Number(h.value)} />
-                  </div>
-                  <span className={`w-16 text-right text-[10px] font-mono font-bold ${getColor(Number(h.value))}`}>
-                    {h.value} {h.value_classification.split(' ')[0]}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
-      ) : (
-        <p className="text-sm text-white/30">Failed to load. Check your connection.</p>
-      )}
-    </div>
-  );
-}
-
-function ResourceCard({ title, url, desc }: { title: string; url: string; desc: string }) {
-  return (
-    <a href={url} target="_blank" rel="noopener noreferrer"
-      className="block rounded-xl border border-white/5 bg-white/[0.02] p-4 transition hover:border-white/10 hover:bg-white/[0.04]">
-      <p className="text-sm font-medium text-white/70">{title} ↗</p>
-      <p className="mt-0.5 text-xs text-white/35">{desc}</p>
-    </a>
-  );
-}
-
-function StocksSentiment() {
-  return (
-    <div className="space-y-3">
-      <p className="text-xs text-white/40">Real-time stock market sentiment — use these resources:</p>
-      <ResourceCard title="CNN Fear & Greed Index" url="https://money.cnn.com/data/fear-and-greed/" desc="Composite index: momentum, put/call ratio, breadth, VIX, junk bonds, safe haven demand" />
-      <ResourceCard title="CBOE VIX (Volatility Index)" url="https://www.cboe.com/tradable_products/vix/" desc="Market's expectation of 30-day volatility — above 30 = fear, below 20 = complacency" />
-      <ResourceCard title="Barchart Market Overview" url="https://www.barchart.com/stocks/market-performance/market-overview" desc="Advance/decline, new highs/lows, sector performance" />
-      <ResourceCard title="Fear & Greed Lab" url="https://fearandgreedlab.com/" desc="Extended sentiment tracking for US equities" />
-    </div>
-  );
-}
-
-function ForexSentiment() {
-  return (
-    <div className="space-y-3">
-      <p className="text-xs text-white/40">Forex positioning, COT data, and order book resources:</p>
-      <ResourceCard title="Myfxbook Community Outlook" url="https://www.myfxbook.com/community/outlook" desc="Retail trader positioning across major pairs — contrarian signal" />
-      <ResourceCard title="CFTC Commitments of Traders" url="https://www.cftc.gov/dea/futures/deahistfo.htm" desc="Weekly COT report — commercial vs. speculative positioning in futures" />
-      <ResourceCard title="Forex Factory Calendar" url="https://www.forexfactory.com/calendar" desc="High-impact news, market sentiment, forecasts" />
-      <ResourceCard title="DXY (Dollar Index) — TradingView" url="https://www.tradingview.com/chart/?symbol=TVC%3ADXY" desc="US Dollar strength index — benchmark for all major USD pairs" />
-    </div>
-  );
-}
-
-function GoldSentiment() {
-  return (
-    <div className="space-y-3">
-      <p className="text-xs text-white/40">Gold (XAU) positioning and sentiment resources:</p>
-      <ResourceCard title="Gold COT Report — CFTC" url="https://www.cftc.gov/dea/futures/deahistfo.htm" desc="Managed money long/short positions in COMEX gold futures" />
-      <ResourceCard title="World Gold Council" url="https://www.gold.org/goldhub/data/gold-prices" desc="Demand drivers, ETF holdings, central bank reserve data" />
-      <ResourceCard title="GDX (Gold Miners ETF)" url="https://www.tradingview.com/chart/?symbol=AMEX%3AGDX" desc="Miners often lead spot gold — useful leading indicator" />
-      <ResourceCard title="FRED: Gold Price" url="https://fred.stlouisfed.org/series/GOLDAMGBD228NLBM" desc="Federal Reserve historical gold price data going back decades" />
-    </div>
-  );
-}
-
-function MarketSentiment() {
-  const [asset, setAsset] = useState<Asset>('Crypto');
-
-  return (
-    <div className="space-y-5">
-      {/* Asset selector */}
-      <div className="flex flex-wrap gap-2">
-        {ASSETS.map((a) => (
-          <button
-            key={a}
-            onClick={() => setAsset(a)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
-              asset === a ? 'bg-white text-black' : 'bg-white/[0.03] text-white/30 hover:bg-white/[0.06] hover:text-white/60'
-            }`}
-          >
-            {a}
-          </button>
-        ))}
-      </div>
-
-      {asset === 'Crypto' && <CryptoSentiment />}
-      {asset === 'Stocks' && <StocksSentiment />}
-      {asset === 'Forex' && <ForexSentiment />}
-      {asset === 'Gold' && <GoldSentiment />}
-    </div>
-  );
-}
 
 /* ══════════════════════════════════════════════════════════════════════════
    MAIN
@@ -776,16 +815,23 @@ export function TradingHub() {
 
   return (
     <>
-      {/* Utility classes referenced via @apply would be ideal; inline here for portability */}
       <style>{`
-        .label-xs { display: block; margin-bottom: 6px; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.35); }
-        .hub-input { width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.03); padding: 12px 16px; font-size: 14px; color: white; outline: none; transition: border-color 0.15s; }
-        .hub-input:focus { border-color: rgba(255,255,255,0.20); }
+        .label-xs {
+          display: block; margin-bottom: 6px; font-size: 10px; font-weight: 600;
+          letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.50);
+        }
+        .hub-input {
+          width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.20);
+          background: rgba(255,255,255,0.04); padding: 12px 16px; font-size: 14px;
+          color: white; outline: none; transition: border-color 0.15s, background 0.15s;
+        }
+        .hub-input:hover { border-color: rgba(255,255,255,0.30); }
+        .hub-input:focus { border-color: rgba(255,255,255,0.55); background: rgba(255,255,255,0.06); }
       `}</style>
 
-      <div className="rounded-2xl border border-white/5 bg-white/[0.015] overflow-hidden">
+      <div className="rounded-2xl border border-white/10 bg-white/[0.015] overflow-hidden">
         {/* Tab bar */}
-        <div className="flex overflow-x-auto border-b border-white/5 scrollbar-none">
+        <div className="flex overflow-x-auto border-b border-white/10 scrollbar-none">
           {TABS.map((t) => {
             const Icon = t.icon;
             const active = tab === t.id;
@@ -794,7 +840,7 @@ export function TradingHub() {
                 key={t.id}
                 onClick={() => setTab(t.id)}
                 className={`flex flex-shrink-0 items-center gap-2 px-5 py-4 text-sm font-medium transition border-b-2 ${
-                  active ? 'border-white text-white' : 'border-transparent text-white/30 hover:text-white/60 hover:border-white/20'
+                  active ? 'border-white text-white' : 'border-transparent text-white/35 hover:text-white/65 hover:border-white/25'
                 }`}
               >
                 <Icon size={14} />

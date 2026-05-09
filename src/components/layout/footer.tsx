@@ -17,20 +17,20 @@ const LEGAL_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/5 bg-black py-16 px-6">
+    <footer className="border-t border-white/5 bg-[#121212] py-16 px-6">
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Image
-                src="/logo/logo.png"
-                alt="InnerEdgeCapital"
-                width={32}
-                height={32}
-                className="h-8 w-8 object-contain"
+                src="/logo/TMR_LOGO.png"
+                alt="TheMarketRevelation"
+                width={144}
+                height={144}
+                className="h-36 w-36 object-contain"
               />
-              <span className="text-lg font-bold text-white">InnerEdgeCapital</span>
+              <span className="text-lg font-bold text-white">TheMarketRevelation</span>
             </div>
             <p className="text-sm leading-relaxed text-white/40">
               The standard of trading education and guidance.
@@ -78,7 +78,7 @@ export function Footer() {
 
         <div className="mt-12 border-t border-white/5 pt-8">
           <p className="text-xs text-white/30">
-            &copy; {new Date().getFullYear()} InnerEdgeCapital. All Rights Reserved.
+            &copy; {new Date().getFullYear()} TheMarketRevelation. All Rights Reserved.
           </p>
         </div>
       </div>

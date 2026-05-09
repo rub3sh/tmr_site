@@ -66,8 +66,8 @@ export default function PolicyPage() {
               <h2 className="mb-4 text-2xl font-heading font-bold text-white">6. Contact</h2>
               <p>
                 For questions about this policy, contact us at{' '}
-                <a href="mailto:support@inneredgecapital.com" className="text-[var(--accent)] underline underline-offset-4">
-                  support@inneredgecapital.com
+                <a href="mailto:support@themarketrevelation.com" className="text-[var(--accent)] underline underline-offset-4">
+                  support@themarketrevelation.com
                 </a>
               </p>
             </section>

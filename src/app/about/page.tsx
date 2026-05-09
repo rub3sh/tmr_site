@@ -45,7 +45,7 @@ export default function AboutPage() {
             Our Story
           </span>
           <h1 className="mt-3 font-heading text-4xl font-bold text-white md:text-5xl lg:text-6xl">
-            About InnerEdgeCapital
+            About TheMarketRevelation
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-base text-white/50 md:text-lg">
             Built by traders who believe the market has a mathematical structure — and that anyone
@@ -65,7 +65,7 @@ export default function AboutPage() {
           <h2 className="font-heading text-2xl font-bold text-white md:text-3xl">The Mission</h2>
           <div className="mt-6 space-y-4 text-sm leading-relaxed text-white/50 md:text-base">
             <p>
-              InnerEdgeCapital was founded on a single conviction: the market is not random. Behind every candle,
+              TheMarketRevelation was founded on a single conviction: the market is not random. Behind every candle,
               every wick, every sweep — there is structure. Time cycles, price geometry, and institutional order
               flow create a framework that, once understood, gives you an unfair advantage.
             </p>

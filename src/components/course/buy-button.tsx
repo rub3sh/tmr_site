@@ -75,7 +75,7 @@ export function BuyButton({ courseId, courseTitle, priceInPaise, currency }: Buy
         key: keyId,
         amount,
         currency: cur,
-        name: 'InnerEdgeCapital',
+        name: 'TheMarketRevelation',
         description: courseTitle,
         order_id: orderId,
         prefill: { email: userEmail },

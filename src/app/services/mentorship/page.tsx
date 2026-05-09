@@ -172,7 +172,7 @@ const FAQ_ITEMS = [
   { q: 'How frequent is the guidance within the community?', a: 'Daily. Mentors are active every day providing feedback, analysis, and live market commentary.' },
   { q: 'Which markets are mainly focused on?', a: 'Primarily forex and indices (NAS100, US30, Gold). The models work across all liquid markets.' },
   { q: 'How long after purchasing is access granted?', a: "Immediately. You'll receive access to all content and the community within minutes of checkout." },
-  { q: 'What type of trader is InnerEdgeCapital for?', a: 'Traders who want structure, discipline, and a repeatable system — not signals or get-rich-quick schemes.' },
+  { q: 'What type of trader is TheMarketRevelation for?', a: 'Traders who want structure, discipline, and a repeatable system — not signals or get-rich-quick schemes.' },
 ];
 
 /* ─── Micro Components ─── */
@@ -433,7 +433,7 @@ export default function MentorshipPage() {
               <div className="hidden w-56 shrink-0 border-r border-white/5 bg-[#060606] p-4 md:block">
                 <div className="flex items-center gap-2.5 rounded-lg bg-white/[0.04] px-3 py-2">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-xs font-bold text-white/60">IE</div>
-                  <span className="text-xs font-medium text-white/50">InnerEdgeCapital</span>
+                  <span className="text-xs font-medium text-white/50">TheMarketRevelation</span>
                 </div>
                 <div className="mt-5 space-y-0.5">
                   {['# announcements', '# signals', '# testimonials', '# market-chat', '# trade-reviews'].map((ch) => (
@@ -512,9 +512,9 @@ export default function MentorshipPage() {
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/8 bg-white/[0.04] transition-colors group-hover:border-white/12 group-hover:bg-white/[0.06]">
-                      <Icon className="h-5 w-5 text-white/35" strokeWidth={1.5} />
+                      <Icon className="h-5 w-5 text-white/70" strokeWidth={1.5} />
                     </div>
-                    <span className="rounded-full border border-white/6 px-2.5 py-1 text-[10px] font-medium text-white/20">
+                    <span className="rounded-full border border-white/6 px-2.5 py-1 text-[10px] font-medium text-white/60">
                       {card.accent}
                     </span>
                   </div>

@@ -80,7 +80,7 @@ export function Sidebar() {
     <aside className="w-64 min-h-screen bg-black-900 border-r border-white/10 flex flex-col">
       <div className="p-6">
         <Link href="/" className="text-xl font-heading font-bold text-gradient-accent">
-          InnerEdgeCapital
+          TheMarketRevelation
         </Link>
       </div>
 

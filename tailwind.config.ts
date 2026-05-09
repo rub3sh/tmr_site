@@ -9,6 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        black: '#121212',
         accent: {
           DEFAULT: '#FFFFFF',
           light: '#F0F0F0',
@@ -16,7 +17,7 @@ const config: Config = {
           muted: '#888888',
         },
         surface: {
-          DEFAULT: '#000000',
+          DEFAULT: '#121212',
           50: '#FAFAFA',
           100: '#F5F5F5',
           200: '#E5E5E5',

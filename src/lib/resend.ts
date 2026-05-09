@@ -2,7 +2,7 @@ import { Resend } from 'resend';
 
 export const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@inneredgecapital.com';
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@themarketrevelation.com';
 
 function escapeHtml(value: string) {
   return value
@@ -38,11 +38,11 @@ export async function sendWelcomeEmail(
   return resend.emails.send({
     from: FROM_EMAIL,
     to,
-    subject: 'Welcome to InnerEdgeCapital — Your Credentials',
+    subject: 'Welcome to TheMarketRevelation — Your Credentials',
     html: `
       <div style="font-family: 'Inter', sans-serif; background: #0A0A0A; color: #FFFFFF; padding: 40px; max-width: 600px; margin: 0 auto;">
         <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="color: #4F7BF7; font-size: 28px; margin: 0;">InnerEdgeCapital</h1>
+          <h1 style="color: #4F7BF7; font-size: 28px; margin: 0;">TheMarketRevelation</h1>
           <p style="color: #737373; margin-top: 8px;">Your journey into precision trading begins</p>
         </div>
         <div style="background: #171717; border: 1px solid #404040; border-radius: 12px; padding: 30px; margin-bottom: 24px;">
@@ -101,7 +101,7 @@ export async function sendInquiryEmail(
 
   return resend.emails.send({
     from: FROM_EMAIL,
-    to: process.env.RESEND_INQUIRY_TO || 'support@inneredgecapital.com',
+    to: process.env.RESEND_INQUIRY_TO || 'support@themarketrevelation.com',
     subject: 'New Indicator Inquiry',
     html: `
       <div style="font-family: 'Inter', sans-serif; background: #0A0A0A; color: #FFFFFF; padding: 40px; max-width: 640px; margin: 0 auto;">
