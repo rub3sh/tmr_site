@@ -1,9 +1,15 @@
 import { NextRequest } from 'next/server';
 
+const SYMBOLS_RE = /^\d+(,\d+)*$/;
+const TYPE_RE    = /^\d+$/;
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const symbols = searchParams.get('symbols') ?? '1,2,3,4,5,6,7,34';
-  const type    = searchParams.get('type')    ?? '1';
+  const rawSymbols = searchParams.get('symbols') ?? '';
+  const rawType    = searchParams.get('type')    ?? '';
+
+  const symbols = SYMBOLS_RE.test(rawSymbols) ? rawSymbols : '1,2,3,4,5,6,7,34';
+  const type    = TYPE_RE.test(rawType)        ? rawType    : '1';
 
   const html = `<!DOCTYPE html>
 <html>

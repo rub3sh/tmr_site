@@ -1,2 +1,29 @@
-node_modules
-node_modules
+# dependencies
+node_modules/
+
+# build output
+.next/
+out/
+
+# environment variables — never commit these
+.env
+.env.local
+.env.*.local
+.env.production
+.env.production.local
+
+# IDE / editor
+.claude/
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# logs
+*.log
+npm-debug.log*
+
+# prisma generated
+prisma/generated/
