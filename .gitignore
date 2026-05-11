@@ -4,6 +4,7 @@ node_modules/
 # build output
 .next/
 out/
+tsconfig.tsbuildinfo
 
 # environment variables — never commit these
 .env
