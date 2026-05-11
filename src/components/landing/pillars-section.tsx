@@ -150,7 +150,7 @@ function PillarColumn({
             className="relative flex flex-col items-center w-full"
           >
             {/* Pillar image — cropped bigger */}
-            <div className="relative h-[560px] w-full overflow-hidden md:h-[660px] lg:h-[760px]">
+            <div className="relative h-[360px] sm:h-[460px] md:h-[580px] lg:h-[700px] w-full overflow-hidden">
               <Image
                 src="/images/PILLAR.PNG"
                 alt={`${pillar.title} pillar`}
@@ -184,9 +184,9 @@ function PillarColumn({
                 >
                   <div
                     className="flex items-center justify-center rounded-full border-2 border-[var(--accent)]/50 bg-[#121212]/90 shadow-[0_0_32px_rgba(79,123,247,0.2),inset_0_1px_0_rgba(79,123,247,0.2)] backdrop-blur-md"
-                    style={{ width: 88, height: 88 }}
+                    style={{ width: 'clamp(64px,9vw,88px)', height: 'clamp(64px,9vw,88px)' }}
                   >
-                    <Icon className="h-11 w-11 text-[var(--accent)]" strokeWidth={1.2} />
+                    <Icon className="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 text-[var(--accent)]" strokeWidth={1.2} />
                   </div>
                 </motion.div>
 
@@ -210,7 +210,7 @@ function PillarColumn({
                   className="rounded-2xl border border-[var(--accent)]/35 bg-black/55 px-4 py-4 text-center shadow-[0_14px_40px_rgba(0,0,0,0.45)] backdrop-blur-[2px]"
                 >
                   <h3
-                    className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold tracking-wide"
+                    className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-heading font-bold tracking-wide"
                     style={{
                       color: '#f7df97',
                       WebkitTextStroke: '0.9px rgba(35,24,5,0.85)',
@@ -291,7 +291,7 @@ export function PillarsSection() {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section id="services" className="py-28 md:py-36 px-6 overflow-hidden bg-black">
+    <section id="services" className="py-16 sm:py-24 md:py-32 lg:py-36 px-4 sm:px-6 overflow-hidden bg-black">
       <div ref={ref} className="max-w-7xl mx-auto">
         {/* Heading */}
         <motion.div
@@ -306,18 +306,18 @@ export function PillarsSection() {
           transition={{ duration: shouldReduceMotion ? 0.2 : 0.7 }}
           className="text-center space-y-4"
         >
-          <h2 className="text-5xl md:text-6xl font-heading font-bold">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold">
             Built on{' '}
             <span className="text-gradient-accent">Foundations</span>
           </h2>
-          <p className="text-white/40 text-lg max-w-md mx-auto">
+          <p className="text-white/40 text-sm sm:text-base md:text-lg max-w-md mx-auto">
             Three pillars that define institutional trading
           </p>
         </motion.div>
 
         {/* Pillars with section-level shake */}
         <ShakeWrapper isVisible={isVisible}>
-          <div className="grid w-full grid-cols-1 justify-items-center gap-20 sm:px-4 lg:grid-cols-3 lg:items-end lg:gap-10 lg:px-0 xl:gap-12">
+          <div className="grid w-full grid-cols-1 justify-items-center gap-8 sm:gap-12 md:gap-16 sm:px-4 lg:grid-cols-3 lg:items-end lg:gap-10 lg:px-0 xl:gap-12">
             {PILLARS.map((pillar, index) => (
               <PillarColumn
                 key={pillar.title}

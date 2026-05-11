@@ -76,12 +76,12 @@ export default function HomePage() {
       <TeamGridSection />
 
       {/* Trading Tools section */}
-      <section className="px-6 py-24">
+      <section className="px-4 sm:px-6 py-14 sm:py-20 md:py-24">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-10 text-center">
+          <div className="mb-8 sm:mb-10 text-center">
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/30">Free Tools</p>
-            <h2 className="font-heading text-3xl font-bold text-white sm:text-4xl">The Desk</h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm text-white/40">
+            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-white md:text-4xl">The Desk</h2>
+            <p className="mx-auto mt-3 max-w-xl text-xs sm:text-sm text-white/40">
               Position sizing, economic calendar, futures specs, and market sentiment — all in one place.
             </p>
           </div>

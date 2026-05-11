@@ -11,19 +11,19 @@ const PROP_FIRMS = [
   {
     name: 'Lucid Trading',
     discount: '50% OFF',
-    code: 'IEC',
+    code: 'TMR',
     buyHref: '#',
   },
   {
     name: 'Apex Trader Funding',
     discount: '90% OFF',
-    code: 'IEC',
+    code: 'TMR',
     buyHref: '#',
   },
   {
     name: 'Tradeify',
     discount: '40% OFF',
-    code: 'IEC',
+    code: 'TMR',
     buyHref: '#',
   },
 ] as const;
@@ -82,7 +82,7 @@ export default function PropFirmsPage() {
           {/* Discount code badge */}
           <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2">
             <span className="text-sm text-white/60">Use Code:</span>
-            <span className="rounded bg-[#111] px-2 py-0.5 text-sm font-bold text-white">IEC</span>
+            <span className="rounded bg-[#111] px-2 py-0.5 text-sm font-bold text-white">TMR</span>
             <span className="text-sm text-white/40">for best discount!</span>
           </div>
         </motion.div>

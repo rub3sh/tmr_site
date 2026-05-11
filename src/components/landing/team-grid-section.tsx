@@ -17,7 +17,7 @@ export function TeamGridSection() {
   const { ref, isVisible } = useScrollAnimation();
 
   return (
-    <section ref={ref} className="px-6 py-20">
+    <section ref={ref} className="px-4 sm:px-6 py-14 sm:py-18 md:py-20">
       <div className="mx-auto max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -28,7 +28,7 @@ export function TeamGridSection() {
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-white/30">
             Proven Results
           </p>
-          <h2 className="mt-3 font-heading text-4xl font-bold text-white md:text-5xl">
+          <h2 className="mt-3 font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
             THE MELLOW&apos;S HIVE TEAM
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-sm text-white/40">
@@ -36,7 +36,7 @@ export function TeamGridSection() {
           </p>
         </motion.div>
 
-        <div className="mx-auto mt-12 grid max-w-4xl grid-cols-3 gap-3 sm:grid-cols-6">
+        <div className="mx-auto mt-8 sm:mt-12 grid max-w-4xl grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-6 sm:gap-3">
           {TEAM.map((member, i) => (
             <motion.div
               key={member.name}
@@ -45,7 +45,7 @@ export function TeamGridSection() {
               transition={{ duration: 0.4, delay: 0.1 + i * 0.06 }}
               className="group flex flex-col items-center rounded-xl border border-white/5 bg-[#0a0a0a] px-2 py-4 transition-colors hover:border-white/10"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-sm font-bold tracking-wider text-white/20">
+              <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white/5 text-xs sm:text-sm font-bold tracking-wider text-white/20">
                 {member.initials}
               </div>
               <h3 className="mt-2.5 text-[11px] font-bold tracking-wide text-white">

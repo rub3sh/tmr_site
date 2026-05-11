@@ -98,12 +98,12 @@ export function Navbar() {
     : NAV_ITEMS;
 
   const brandLogoSrc = isMentorshipPage
-    ? '/logo/TMR_LOGO.png'
+    ? '/logo/tmr_high_pixel.png'
     : isIndicatorPage
     ? '/logo/quantum_logo.png'
     : isHomePage
-    ? '/logo/TMR_LOGO.png'
-    : '/logo/logo-new-tab.png';
+    ? '/logo/tmr_high_pixel.png'
+    : '/logo/tmr_high_pixel.png';
 
   const brandLogoAlt = isMentorshipPage
     ? 'TMR mentorship logo'
@@ -113,15 +113,15 @@ export function Navbar() {
     ? "Mellow's Hive home logo"
     : "Mellow's Hive";
 
-  const brandLogoScaleClass = isMentorshipAttached ? 'scale-[2.2]' : '';
+  const brandLogoScaleClass = '';
   const brandLinkClass = isMentorshipAttached
     ? 'flex items-center gap-2 overflow-hidden'
     : 'flex items-center gap-2';
   const brandLogoSizeClass = isMentorshipFloating || isHomePage
-    ? 'h-36 w-36 md:h-36 md:w-36'
+    ? 'h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9'
     : isMentorshipAttached
-    ? 'h-14 w-14 md:h-16 md:w-16'
-    : 'h-14 w-14 md:h-16 md:w-16';
+    ? 'h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9'
+    : 'h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9';
 
   const ctaHref = session
     ? session.user.role === 'ADMIN'
@@ -135,25 +135,25 @@ export function Navbar() {
       initial={false}
       animate={isFloating ? { y: 10, scale: 0.98 } : { y: 0, scale: 1 }}
       transition={{ type: 'spring', stiffness: 260, damping: 24 }}
-      className="fixed inset-x-0 top-0 z-50 px-0 md:px-4"
+      className="fixed inset-x-0 top-0 z-50 px-0 sm:px-2 md:px-4"
     >
       <div
         className={`mx-auto flex items-center justify-between transition-all duration-300 ${
           isServiceFloating
-            ? 'mt-2 h-16 max-w-[940px] rounded-full border border-white/10 bg-[rgba(5,5,5,0.92)] px-6 shadow-[0_10px_28px_rgba(0,0,0,0.6)] backdrop-blur-xl'
+            ? 'mt-2 h-14 sm:h-16 max-w-[min(calc(100%-1rem),940px)] rounded-full border border-white/10 bg-[rgba(5,5,5,0.92)] px-4 sm:px-6 shadow-[0_10px_28px_rgba(0,0,0,0.6)] backdrop-blur-xl'
             : isMentorshipAttached
-            ? 'mt-0 h-16 max-w-full border-b border-white/5 bg-black/60 px-6 backdrop-blur-md'
+            ? 'mt-0 h-14 sm:h-16 max-w-full border-b border-white/5 bg-black/60 px-4 sm:px-6 backdrop-blur-md'
             : isFloating
-            ? 'mt-2 h-14 max-w-7xl rounded-xl border border-white/8 bg-black/85 px-5 shadow-[0_12px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl'
-            : 'mt-0 h-16 max-w-full border-b border-white/5 bg-black/60 px-6 backdrop-blur-md'
+            ? 'mt-2 h-13 sm:h-14 max-w-7xl rounded-xl border border-white/8 bg-black/85 px-4 sm:px-5 shadow-[0_12px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl'
+            : 'mt-0 h-14 sm:h-16 max-w-full border-b border-white/5 bg-black/60 px-4 sm:px-6 backdrop-blur-md'
         }`}
       >
         <Link href={isStudentArea ? '/student/library' : '/'} className={brandLinkClass} onClick={() => setMobileOpen(false)}>
           <Image
             src={brandLogoSrc}
             alt={brandLogoAlt}
-            width={64}
-            height={64}
+            width={36}
+            height={36}
             className={`${brandLogoSizeClass} ${brandLogoScaleClass} shrink-0 object-contain brightness-110`}
             priority
           />

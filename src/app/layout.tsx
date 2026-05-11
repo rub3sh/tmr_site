@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Space_Grotesk, Inter } from 'next/font/google';
 import { Providers } from '@/components/providers';
-import { DevToolsBlocker } from '@/components/dev-tools-blocker';
 import './globals.css';
 
 const spaceGrotesk = Space_Grotesk({
@@ -77,12 +76,12 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/icon.png', sizes: '512x512', type: 'image/png' },
-      { url: '/icon.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/logo/tmr_high_pixel.png', sizes: '512x512', type: 'image/png' },
+      { url: '/logo/tmr_high_pixel.png', sizes: '192x192', type: 'image/png' },
+      { url: '/logo/tmr_high_pixel.png', sizes: '32x32', type: 'image/png' },
     ],
-    shortcut: '/icon.png',
-    apple: '/apple-icon.png',
+    shortcut: '/logo/tmr_high_pixel.png',
+    apple: '/logo/tmr_high_pixel.png',
   },
 };
 
@@ -95,7 +94,6 @@ export default function RootLayout({
     <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable}`}>
       <body className="bg-black text-white font-body antialiased">
         <Providers>{children}</Providers>
-        <DevToolsBlocker />
       </body>
     </html>
   );

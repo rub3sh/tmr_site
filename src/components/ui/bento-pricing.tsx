@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { CheckIcon, SparklesIcon } from 'lucide-react';
+import { useSession, signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +17,7 @@ type PricingCardProps = {
   cta?: string;
   className?: string;
   highlight?: boolean;
+  onCtaClick?: () => void;
 };
 
 function FilledCheck() {
@@ -34,6 +37,7 @@ function PricingCard({
   cta = 'Choose Plan',
   className,
   highlight = false,
+  onCtaClick,
 }: PricingCardProps) {
   return (
     <div
@@ -52,14 +56,14 @@ function PricingCard({
           </Badge>
         )}
         <div className="w-full sm:ml-auto sm:w-auto">
-          <Button variant={highlight ? 'default' : 'outline'} size="sm">
+          <Button variant={highlight ? 'default' : 'outline'} size="sm" onClick={onCtaClick}>
             {cta}
           </Button>
         </div>
       </div>
 
       <div className="flex items-end gap-2 px-4 py-2">
-        <span className="font-mono text-4xl font-semibold tracking-tight md:text-5xl">{priceLabel}</span>
+        <span className="font-mono text-3xl sm:text-4xl font-semibold tracking-tight md:text-5xl">{priceLabel}</span>
         <span className="text-sm text-white/45">/{billingLabel}</span>
       </div>
 
@@ -121,6 +125,16 @@ const MONTHLY_EQUIVALENT: Record<BillingCycle, string> = {
 
 export function BentoPricing({ mode = 'default' }: BentoPricingProps) {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  function handlePurchaseCta() {
+    if (session) {
+      router.push('/indicators/purchase');
+    } else {
+      signIn('discord', { callbackUrl: '/indicators/purchase' });
+    }
+  }
 
   const handleBillingToggleKeyDown = (
     event: React.KeyboardEvent<HTMLButtonElement>,
@@ -170,7 +184,7 @@ export function BentoPricing({ mode = 'default' }: BentoPricingProps) {
                   onClick={() => setBillingCycle(option.value)}
                   onKeyDown={(event) => handleBillingToggleKeyDown(event, index)}
                   className={cn(
-                    'rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] transition-all sm:text-sm',
+                    'rounded-full px-2.5 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.08em] transition-all md:text-sm',
                     isActive
                       ? 'bg-[var(--accent)] text-black shadow-[0_0_24px_var(--accent-glow)]'
                       : 'text-white/65 hover:text-white'
@@ -183,13 +197,14 @@ export function BentoPricing({ mode = 'default' }: BentoPricingProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-8">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-8">
           <PricingCard
             titleBadge="QUANTUM CORE SUITE"
             subtitle="Essential execution tools"
             priceLabel={INDICATOR_PRICES.core[billingCycle]}
             billingLabel={BILLING_LABELS[billingCycle]}
             cta="Choose Core"
+            onCtaClick={handlePurchaseCta}
             features={[
               MONTHLY_EQUIVALENT[billingCycle],
               'Core execution framework access',
@@ -203,6 +218,7 @@ export function BentoPricing({ mode = 'default' }: BentoPricingProps) {
             priceLabel={INDICATOR_PRICES.smt[billingCycle]}
             billingLabel={BILLING_LABELS[billingCycle]}
             cta="Choose SMT"
+            onCtaClick={handlePurchaseCta}
             features={[
               MONTHLY_EQUIVALENT[billingCycle],
               'Quantum SMT Engine only',
@@ -218,6 +234,7 @@ export function BentoPricing({ mode = 'default' }: BentoPricingProps) {
             priceLabel={INDICATOR_PRICES.suite[billingCycle]}
             billingLabel={BILLING_LABELS[billingCycle]}
             cta="Choose Full Suite"
+            onCtaClick={handlePurchaseCta}
             highlight
             features={[
               MONTHLY_EQUIVALENT[billingCycle],
@@ -234,7 +251,7 @@ export function BentoPricing({ mode = 'default' }: BentoPricingProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-8">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-8">
       <PricingCard
         titleBadge="FREE STARTER"
         priceLabel="Free"

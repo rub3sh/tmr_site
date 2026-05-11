@@ -67,7 +67,7 @@ export function AdminSidebar() {
       <div className="flex h-16 items-center justify-between border-b border-white/5 px-4">
         <Link href="/admin" className="flex items-center gap-3">
           <Image
-            src="/logo/logo-new-tab.png"
+            src="/logo/tmr_high_pixel.png"
             alt="Admin"
             width={36}
             height={36}

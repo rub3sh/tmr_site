@@ -17,9 +17,9 @@ const LEGAL_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/5 bg-[#121212] py-16 px-6">
+    <footer className="border-t border-white/5 bg-[#121212] py-10 sm:py-14 md:py-16 px-4 sm:px-6">
       <div className="mx-auto max-w-7xl">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 sm:gap-10 md:grid-cols-3 md:gap-12">
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -28,9 +28,9 @@ export function Footer() {
                 alt="TheMarketRevelation"
                 width={144}
                 height={144}
-                className="h-36 w-36 object-contain"
+                className="h-20 w-20 sm:h-28 sm:w-28 md:h-36 md:w-36 object-contain"
               />
-              <span className="text-lg font-bold text-white">TheMarketRevelation</span>
+              <span className="text-base sm:text-lg font-bold text-white">TheMarketRevelation</span>
             </div>
             <p className="text-sm leading-relaxed text-white/40">
               The standard of trading education and guidance.
@@ -76,7 +76,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-white/5 pt-8">
+        <div className="mt-8 sm:mt-10 md:mt-12 border-t border-white/5 pt-6 sm:pt-8">
           <p className="text-xs text-white/30">
             &copy; {new Date().getFullYear()} TheMarketRevelation. All Rights Reserved.
           </p>

@@ -227,7 +227,7 @@ export default function MentorshipPage() {
       <Navbar />
 
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden px-6 pt-28 pb-24 md:pt-38">
+      <section className="relative overflow-hidden px-4 sm:px-6 pt-20 pb-16 sm:pt-24 sm:pb-20 md:pt-32 md:pb-24">
         {/* Background accents */}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_60%_-10%,rgba(255,255,255,0.04),transparent)]" />
@@ -247,14 +247,14 @@ export default function MentorshipPage() {
               TMR — The Market Revelation
             </div>
 
-            <h1 className="font-heading text-[2.6rem] font-bold leading-[1.1] tracking-tight text-white md:text-5xl lg:text-[3.25rem]">
+            <h1 className="font-heading text-[1.75rem] sm:text-[2.2rem] font-bold leading-[1.1] tracking-tight text-white md:text-5xl lg:text-[3.25rem]">
               Where traders end their{' '}
               <span className="bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent">
                 search for consistency.
               </span>
             </h1>
 
-            <p className="mt-5 text-base leading-relaxed text-white/40 md:text-lg">
+            <p className="mt-4 text-sm sm:text-base leading-relaxed text-white/40 md:text-lg">
               The standard for trading education and guidance — structured systems, daily mentors, and a community that holds you accountable.
             </p>
 
@@ -370,7 +370,7 @@ export default function MentorshipPage() {
       </section>
 
       {/* ── Models ── */}
-      <section id="models" className="scroll-mt-24 px-6 py-24">
+      <section id="models" className="scroll-mt-24 px-4 sm:px-6 py-14 sm:py-20 md:py-24">
         <div className="mx-auto max-w-7xl">
           <motion.div {...fadeUp()}>
             <SectionLabel>Models</SectionLabel>
@@ -417,7 +417,7 @@ export default function MentorshipPage() {
       </section>
 
       {/* ── Community ── */}
-      <section id="community" className="scroll-mt-24 px-6 py-24">
+      <section id="community" className="scroll-mt-24 px-4 sm:px-6 py-14 sm:py-20 md:py-24">
         <div className="mx-auto max-w-7xl">
           <motion.div {...fadeUp()}>
             <SectionLabel>Community</SectionLabel>
@@ -491,7 +491,7 @@ export default function MentorshipPage() {
       </section>
 
       {/* ── What You Get ── */}
-      <section className="px-6 py-24">
+      <section className="px-4 sm:px-6 py-14 sm:py-20 md:py-24">
         <div className="mx-auto max-w-7xl">
           <motion.div {...fadeUp()}>
             <SectionLabel>What You Get</SectionLabel>
@@ -529,7 +529,7 @@ export default function MentorshipPage() {
       </section>
 
       {/* ── Ecosystem ── */}
-      <section className="px-6 py-24">
+      <section className="px-4 sm:px-6 py-14 sm:py-20 md:py-24">
         <div className="mx-auto max-w-7xl">
           <motion.div {...fadeUp()} className="text-center">
             <SectionLabel>Included With Membership</SectionLabel>
@@ -561,7 +561,7 @@ export default function MentorshipPage() {
       </section>
 
       {/* ── Process ── */}
-      <section id="process" className="scroll-mt-24 px-6 py-24">
+      <section id="process" className="scroll-mt-24 px-4 sm:px-6 py-14 sm:py-20 md:py-24">
         <div className="mx-auto max-w-4xl">
           <motion.div {...fadeUp()}>
             <SectionLabel>Process</SectionLabel>
@@ -598,7 +598,7 @@ export default function MentorshipPage() {
       </section>
 
       {/* ── Pricing ── */}
-      <section id="pricing" ref={pricingRef} className="scroll-mt-24 px-6 py-24">
+      <section id="pricing" ref={pricingRef} className="scroll-mt-24 px-4 sm:px-6 py-14 sm:py-20 md:py-24">
         <div className="mx-auto max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: 22 }}
@@ -622,7 +622,7 @@ export default function MentorshipPage() {
       </section>
 
       {/* ── Testimonials ── */}
-      <section id="testimonials" className="scroll-mt-24 px-6 py-24">
+      <section id="testimonials" className="scroll-mt-24 px-4 sm:px-6 py-14 sm:py-20 md:py-24">
         <div className="mx-auto max-w-7xl">
           <motion.div {...fadeUp()}>
             <SectionLabel>Testimonials</SectionLabel>
@@ -673,7 +673,7 @@ export default function MentorshipPage() {
       </section>
 
       {/* ── Team ── */}
-      <section id="team" className="scroll-mt-24 px-6 py-24">
+      <section id="team" className="scroll-mt-24 px-4 sm:px-6 py-14 sm:py-20 md:py-24">
         <div className="mx-auto max-w-6xl">
           <motion.div {...fadeUp()}>
             <SectionLabel>Team</SectionLabel>
@@ -708,7 +708,7 @@ export default function MentorshipPage() {
       </section>
 
       {/* ── FAQ ── */}
-      <section id="faq" className="scroll-mt-24 px-6 py-24">
+      <section id="faq" className="scroll-mt-24 px-4 sm:px-6 py-14 sm:py-20 md:py-24">
         <div className="mx-auto max-w-3xl">
           <motion.div {...fadeUp()}>
             <SectionLabel>FAQ</SectionLabel>

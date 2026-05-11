@@ -3,6 +3,8 @@
 import { FormEvent, KeyboardEvent, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSession, signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
@@ -57,10 +59,20 @@ const fadeUp = (delay = 0) => ({
 });
 
 export default function IndicatorsPage() {
+  const { data: session } = useSession();
+  const router = useRouter();
   const [active, setActive] = useState(0);
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [errMsg, setErrMsg] = useState('');
+
+  function handleGetAccess() {
+    if (session) {
+      router.push('/indicators/purchase');
+    } else {
+      signIn('discord', { callbackUrl: '/indicators/purchase' });
+    }
+  }
 
   function handleTabKey(e: KeyboardEvent<HTMLButtonElement>, i: number) {
     const last = INDICATORS.length - 1;
@@ -94,7 +106,7 @@ export default function IndicatorsPage() {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative overflow-hidden px-6 pt-28 pb-24 md:pt-38">
+      <section className="relative overflow-hidden px-4 sm:px-6 pt-20 pb-16 sm:pt-24 sm:pb-20 md:pt-32 md:pb-24">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(255,255,255,0.05),transparent)]" />
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/8 to-transparent" />
@@ -107,7 +119,7 @@ export default function IndicatorsPage() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.08 }} className="mt-6 text-center">
-            <h1 className="font-heading text-[2.6rem] font-bold leading-[1.1] tracking-tight text-white md:text-5xl lg:text-[3.5rem]">
+            <h1 className="font-heading text-[1.75rem] sm:text-[2.2rem] font-bold leading-[1.1] tracking-tight text-white md:text-5xl lg:text-[3.5rem]">
               Precision tools built for<br />
               <span className="bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent">serious traders.</span>
             </h1>
@@ -117,9 +129,9 @@ export default function IndicatorsPage() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.18 }} className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link href="/login" className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-black transition-all hover:bg-white/92 hover:gap-3 active:scale-[0.98]">
+            <button onClick={handleGetAccess} className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-black transition-all hover:bg-white/92 hover:gap-3 active:scale-[0.98]">
               Get Access Now <ArrowRight className="h-4 w-4" />
-            </Link>
+            </button>
             <a href="#indicators" className="inline-flex items-center gap-1.5 rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-white/50 transition hover:border-white/20 hover:text-white/80">
               View Indicators
             </a>
@@ -169,7 +181,7 @@ export default function IndicatorsPage() {
       </section>
 
       {/* Indicator Showcase */}
-      <section id="indicators" className="scroll-mt-24 px-6 py-24">
+      <section id="indicators" className="scroll-mt-24 px-4 sm:px-6 py-14 sm:py-20 md:py-24">
         <div className="mx-auto max-w-6xl">
           <motion.div {...fadeUp()} className="mb-12">
             <SectionLabel>Indicator Suite</SectionLabel>
@@ -221,9 +233,9 @@ export default function IndicatorsPage() {
                 </div>
               </div>
               <div className="p-5">
-                <Link href="/login" className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-white/92 active:scale-[0.98]">
+                <button onClick={handleGetAccess} className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-white/92 active:scale-[0.98]">
                   Access {INDICATORS[active].name} <ArrowRight className="h-4 w-4"/>
-                </Link>
+                </button>
               </div>
             </div>
           </motion.div>
@@ -231,7 +243,7 @@ export default function IndicatorsPage() {
       </section>
 
       {/* Feature Grid */}
-      <section id="features" className="scroll-mt-24 px-6 py-24">
+      <section id="features" className="scroll-mt-24 px-4 sm:px-6 py-14 sm:py-20 md:py-24">
         <div className="mx-auto max-w-6xl">
           <motion.div {...fadeUp()} className="mb-12 text-center">
             <SectionLabel>What's Included</SectionLabel>
@@ -261,7 +273,7 @@ export default function IndicatorsPage() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="scroll-mt-24 px-6 py-24">
+      <section id="pricing" className="scroll-mt-24 px-4 sm:px-6 py-14 sm:py-20 md:py-24">
         <div className="mx-auto max-w-6xl">
           <motion.div {...fadeUp()} className="mb-12">
             <SectionLabel>Pricing</SectionLabel>
@@ -273,7 +285,7 @@ export default function IndicatorsPage() {
       </section>
 
       {/* Custom Indicator */}
-      <section id="custom-indicator" className="scroll-mt-24 px-6 py-24">
+      <section id="custom-indicator" className="scroll-mt-24 px-4 sm:px-6 py-14 sm:py-20 md:py-24">
         <div className="mx-auto max-w-6xl">
           <motion.div {...fadeUp()} className="overflow-hidden rounded-2xl border border-white/8 bg-[#080808]">
             <div className="grid lg:grid-cols-2">
