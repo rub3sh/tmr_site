@@ -139,14 +139,14 @@ export default function IndicatorsPage() {
 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.28 }} className="mt-14 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {STATS.map((s) => (
-              <div key={s.label} className="rounded-xl border border-white/6 bg-white/[0.03] px-4 py-4 text-center">
+              <div key={s.label} className="rounded-xl bg-white/[0.03] px-4 py-4 text-center" style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 2px 10px rgba(0,0,0,0.6)" }}>
                 <p className="font-heading text-2xl font-bold text-white">{s.value}</p>
                 <p className="mt-1 text-[11px] text-white/30">{s.label}</p>
               </div>
             ))}
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.22 }} className="mt-10 overflow-hidden rounded-2xl border border-white/8 bg-[#080808]">
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.22 }} className="mt-10 overflow-hidden rounded-2xl bg-[#080808]" style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 4px 24px rgba(0,0,0,0.6)" }}>
             <div className="flex items-center justify-between border-b border-white/5 px-5 py-3">
               <div className="flex items-center gap-2">
                 <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
@@ -189,7 +189,7 @@ export default function IndicatorsPage() {
             <p className="mt-3 max-w-lg text-sm leading-relaxed text-white/35">Each indicator is purpose-built for a specific aspect of market structure — no overlap, no redundancy.</p>
           </motion.div>
           <motion.div {...fadeUp(0.1)} className="grid gap-5 lg:grid-cols-[1fr_1.15fr]">
-            <div className="flex flex-col gap-0.5 rounded-2xl border border-white/6 bg-[#060606] p-2" role="tablist" aria-label="Quantum indicators">
+            <div className="flex flex-col gap-0.5 rounded-2xl bg-[#060606] p-2" role="tablist" aria-label="Quantum indicators" style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 4px 24px rgba(0,0,0,0.6)" }}>
               {INDICATORS.map((ind, i) => {
                 const Icon = ind.icon;
                 return (
@@ -208,7 +208,7 @@ export default function IndicatorsPage() {
                 );
               })}
             </div>
-            <div id="ind-panel" role="tabpanel" aria-labelledby={`ind-tab-${active}`} className="flex flex-col overflow-hidden rounded-2xl border border-white/6 bg-[#080808]">
+            <div id="ind-panel" role="tabpanel" aria-labelledby={`ind-tab-${active}`} className="flex flex-col overflow-hidden rounded-2xl bg-[#080808]" style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 4px 24px rgba(0,0,0,0.6)" }}>
               <div className="flex-1 border-b border-white/5 p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div>
@@ -254,7 +254,7 @@ export default function IndicatorsPage() {
             {INDICATORS.map((ind, i) => {
               const Icon = ind.icon;
               return (
-                <motion.div key={ind.name} {...fadeUp(0.03+i*0.04)} className="group rounded-xl border border-white/5 bg-[#080808] p-5 transition-all hover:border-white/10 hover:bg-[#0a0a0a]">
+                <motion.div key={ind.name} {...fadeUp(0.03+i*0.04)} className="group rounded-xl bg-[#080808] p-5 transition-all hover:bg-[#0a0a0a]" style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 2px 10px rgba(0,0,0,0.6)" }}>
                   <div className="flex items-start gap-3">
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/8 bg-white/[0.04] transition group-hover:border-white/12">
                       <Icon className="h-3.5 w-3.5 text-white/35" strokeWidth={1.5}/>
@@ -287,7 +287,7 @@ export default function IndicatorsPage() {
       {/* Custom Indicator */}
       <section id="custom-indicator" className="scroll-mt-24 px-4 sm:px-6 py-14 sm:py-20 md:py-24">
         <div className="mx-auto max-w-6xl">
-          <motion.div {...fadeUp()} className="overflow-hidden rounded-2xl border border-white/8 bg-[#080808]">
+          <motion.div {...fadeUp()} className="overflow-hidden rounded-2xl bg-[#080808]" style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 4px 24px rgba(0,0,0,0.6)" }}>
             <div className="grid lg:grid-cols-2">
               <div className="border-b border-white/5 p-8 lg:border-b-0 lg:border-r md:p-10">
                 <SectionLabel>Custom Build</SectionLabel>
@@ -322,7 +322,7 @@ export default function IndicatorsPage() {
       {/* Inquiry Form */}
       <section id="inquiry" className="scroll-mt-24 px-6 pb-24">
         <div className="mx-auto max-w-5xl">
-          <motion.div {...fadeUp()} className="overflow-hidden rounded-2xl border border-white/8 bg-[#080808]">
+          <motion.div {...fadeUp()} className="overflow-hidden rounded-2xl bg-[#080808]" style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 4px 24px rgba(0,0,0,0.6)" }}>
             <div className="grid lg:grid-cols-[1.1fr_1fr]">
               <div className="border-b border-white/5 p-8 lg:border-b-0 lg:border-r md:p-10">
                 <SectionLabel>Custom Indicator Inquiry</SectionLabel>

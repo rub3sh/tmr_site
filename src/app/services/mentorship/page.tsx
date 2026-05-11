@@ -299,7 +299,7 @@ export default function MentorshipPage() {
             transition={{ duration: 0.65, delay: 0.15 }}
             className="w-full max-w-lg"
           >
-            <div className="relative overflow-hidden rounded-2xl border border-white/8 bg-[#080808]">
+            <div className="relative overflow-hidden rounded-2xl bg-[#080808]" style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 4px 24px rgba(0,0,0,0.6)" }}>
               {/* Chart header */}
               <div className="flex items-center justify-between border-b border-white/5 px-5 py-3.5">
                 <div className="flex items-center gap-2">
@@ -385,7 +385,8 @@ export default function MentorshipPage() {
               <motion.div
                 key={model.title}
                 {...fadeUp(i * 0.12)}
-                className="group overflow-hidden rounded-2xl border border-white/6 bg-[#080808] transition-colors hover:border-white/10"
+                className="group overflow-hidden rounded-2xl bg-[#080808] transition-colors"
+                style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 4px 24px rgba(0,0,0,0.6)" }}
               >
                 <div className="relative aspect-[16/9] w-full overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent z-10" />
@@ -428,7 +429,7 @@ export default function MentorshipPage() {
           </motion.div>
 
           {/* Discord mockup */}
-          <motion.div {...fadeUp(0.15)} className="mt-10 overflow-hidden rounded-2xl border border-white/6 bg-[#080808]">
+          <motion.div {...fadeUp(0.15)} className="mt-10 overflow-hidden rounded-2xl bg-[#080808]" style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 4px 24px rgba(0,0,0,0.6)" }}>
             <div className="flex">
               <div className="hidden w-56 shrink-0 border-r border-white/5 bg-[#060606] p-4 md:block">
                 <div className="flex items-center gap-2.5 rounded-lg bg-white/[0.04] px-3 py-2">
@@ -476,7 +477,8 @@ export default function MentorshipPage() {
                 <motion.div
                   key={f.title}
                   {...fadeUp(0.08 + i * 0.08)}
-                  className="rounded-xl border border-white/5 bg-[#080808] p-5 transition-colors hover:border-white/10"
+                  className="rounded-xl bg-[#080808] p-5"
+                  style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 2px 10px rgba(0,0,0,0.6)" }}
                 >
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.06]">
                     <Icon className="h-4.5 w-4.5 text-white/40" strokeWidth={1.5} />
@@ -508,7 +510,8 @@ export default function MentorshipPage() {
                 <motion.div
                   key={card.title}
                   {...fadeUp(0.08 + i * 0.08)}
-                  className="group relative overflow-hidden rounded-2xl border border-white/6 bg-[#080808] p-6 transition-all hover:border-white/12 hover:bg-[#0a0a0a]"
+                  className="group relative overflow-hidden rounded-2xl bg-[#080808] p-6 transition-all hover:bg-[#0a0a0a]"
+                  style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 4px 24px rgba(0,0,0,0.6)" }}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/8 bg-white/[0.04] transition-colors group-hover:border-white/12 group-hover:bg-white/[0.06]">
@@ -546,7 +549,8 @@ export default function MentorshipPage() {
                 <motion.div
                   key={f.title}
                   {...fadeUp(0.05 + i * 0.06)}
-                  className="group rounded-2xl border border-white/5 bg-[#080808] p-6 transition-all hover:border-white/10 hover:bg-[#0a0a0a]"
+                  className="group rounded-2xl bg-[#080808] p-6 transition-all hover:bg-[#0a0a0a]"
+                  style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 4px 24px rgba(0,0,0,0.6)" }}
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/8 bg-white/[0.04]">
                     <Icon className="h-4.5 w-4.5 text-white/35" strokeWidth={1.5} />
@@ -635,7 +639,7 @@ export default function MentorshipPage() {
           </motion.div>
 
           <motion.div {...fadeUp(0.1)} className="mt-8 flex items-center gap-4">
-            <div className="rounded-xl border border-white/6 bg-[#080808] px-6 py-4">
+            <div className="rounded-xl bg-[#080808] px-6 py-4" style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 2px 10px rgba(0,0,0,0.6)" }}>
               <p className="text-2xl font-bold text-white">450+</p>
               <div className="mt-1 flex items-center gap-1.5">
                 <div className="flex gap-0.5">
@@ -653,7 +657,8 @@ export default function MentorshipPage() {
               <motion.div
                 key={i}
                 {...fadeUp(0.05 + i * 0.07)}
-                className="flex flex-col rounded-xl border border-white/6 bg-[#080808] p-5 transition-colors hover:border-white/10"
+                className="flex flex-col rounded-xl bg-[#080808] p-5 transition-colors"
+                style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 2px 10px rgba(0,0,0,0.6)" }}
               >
                 <div className="flex gap-0.5 mb-3">
                   {Array.from({ length: 5 }).map((_, s) => (
@@ -688,7 +693,8 @@ export default function MentorshipPage() {
               <motion.div
                 key={member.name}
                 {...fadeUp(i * 0.1)}
-                className="group rounded-2xl border border-white/6 bg-[#080808] p-6 transition-colors hover:border-white/10"
+                className="group rounded-2xl bg-[#080808] p-6 transition-colors"
+                style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 4px 24px rgba(0,0,0,0.6)" }}
               >
                 <div className="flex items-center gap-3.5">
                   <div className={`flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br ${member.color} text-sm font-bold text-white/70 ring-1 ring-white/8`}>
@@ -724,7 +730,7 @@ export default function MentorshipPage() {
             ))}
           </motion.div>
 
-          <motion.div {...fadeUp(0.15)} className="mt-14 rounded-2xl border border-white/6 bg-[#080808] p-8 text-center">
+          <motion.div {...fadeUp(0.15)} className="mt-14 rounded-2xl bg-[#080808] p-8 text-center" style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.1), 0 4px 24px rgba(0,0,0,0.6)" }}>
             <p className="text-sm text-white/40">Still have questions?</p>
             <p className="mt-1 text-lg font-semibold text-white">We're here to help.</p>
             <Link
